@@ -20,8 +20,8 @@
         <java.version>1.8</java.version>
     </properties>
 
-    <!-- module值：从sample到spring-boot-xxx的相对路径 -->
     <modules>
+        <module>spring-boot-sample-data-mybatis</module>
     </modules>
 
 </project>

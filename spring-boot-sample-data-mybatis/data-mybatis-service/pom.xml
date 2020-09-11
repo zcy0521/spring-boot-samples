@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sample.springboot.data.mybatis</groupId>
+        <artifactId>spring-boot-sample-data-mybatis</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>data-mybatis-service</artifactId>
+    <packaging>jar</packaging>
+    <name>Spring Boot Sample :: Data :: Mybatis : Service</name>
+
+    <dependencies>
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- dao -->
+        <dependency>
+            <groupId>com.sample.springboot.data.mybatis</groupId>
+            <artifactId>data-mybatis-dao</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+</project>

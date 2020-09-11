@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sample.springboot.data.mybatis</groupId>
+        <artifactId>spring-boot-sample-data-mybatis</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>data-mybatis-web</artifactId>
+    <packaging>jar</packaging>
+    <name>Spring Boot Sample :: Data :: Mybatis : Web</name>
+
+    <properties>
+        <!-- DAO 项目路径 -->
+        <dao.target.dir>${basedir}/../data-mybatis-dao</dao.target.dir>
+        <!-- Generator 生成文件路径 -->
+        <targetJavaProject>${dao.target.dir}/src/main/java</targetJavaProject>
+        <targetModelPackage>com.sample.springboot.data.mybatis.domain</targetModelPackage>
+        <targetMapperPackage>com.sample.springboot.data.mybatis.mapper</targetMapperPackage>
+        <targetResourcesProject>${dao.target.dir}/src/main/resources</targetResourcesProject>
+        <targetXMLPackage>mapper</targetXMLPackage>
+    </properties>
+
+    <dependencies>
+        <!-- spring-boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- durid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- dao、service、generator -->
+        <dependency>
+            <groupId>com.sample.springboot.data.mybatis</groupId>
+            <artifactId>data-mybatis-dao</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample.springboot.data.mybatis</groupId>
+            <artifactId>data-mybatis-service</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample.springboot.data.mybatis</groupId>
+            <artifactId>data-mybatis-generator</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- MyBatis Generator -->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <configurationFile>src/main/resources/generator/generatorConfig.xml</configurationFile>
+                    <overwrite>true</overwrite>
+                    <verbose>true</verbose>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.21</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sample.springboot.data.mybatis</groupId>
+                        <artifactId>data-mybatis-dao</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sample.springboot.data.mybatis</groupId>
+                        <artifactId>data-mybatis-generator</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
