@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sample.springboot</groupId>
+        <artifactId>spring-boot-samples</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>com.sample.springboot.data.jpa</groupId>
+    <artifactId>spring-boot-sample-data-jpa</artifactId>
+    <packaging>pom</packaging>
+    <name>Spring Boot Sample :: Data :: JPA</name>
+
+    <properties>
+        <druid.version>1.1.23</druid.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- durid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>data-jpa-dao</module>
+        <module>data-jpa-service</module>
+        <module>data-jpa-web</module>
+    </modules>
+
+</project>

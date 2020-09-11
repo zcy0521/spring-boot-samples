@@ -22,6 +22,7 @@
 
     <modules>
         <module>spring-boot-sample-data-mybatis</module>
+        <module>spring-boot-sample-data-jpa</module>
     </modules>
 
 </project>
