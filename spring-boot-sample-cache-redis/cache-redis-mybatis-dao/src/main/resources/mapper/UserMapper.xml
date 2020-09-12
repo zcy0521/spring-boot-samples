@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sample.springboot.cache.redis.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.sample.springboot.cache.redis.domain.UserDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+  </resultMap>
+
+  <sql id="select">
+    select * from `cache_redis_user`
+  </sql>
+
+  <sql id="delete">
+    delete from `cache_redis_user`
+  </sql>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    <include refid="select"/>
+    <choose>
+      <when test="ids!=null and ids.size()>0">
+        where `id` in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        where `id` is null
+      </otherwise>
+    </choose>
+  </select>
+
+  <delete id="deleteAll">
+    <include refid="delete"/>
+  </delete>
+
+</mapper>

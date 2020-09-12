@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <properties resource="application.properties"/>
+
+    <context id="cache" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
+        <plugin type="com.sample.springboot.cache.redis.mybatis.generator.plugin.ModelPlugin" />
+        <plugin type="com.sample.springboot.cache.redis.mybatis.generator.plugin.SqlMapPlugin" />
+        <plugin type="com.sample.springboot.cache.redis.mybatis.generator.plugin.MapperPlugin">
+            <property name="baseMapper" value="com.sample.springboot.cache.redis.mapper.base.BaseMapper"/>
+        </plugin>
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="${targetModelPackage}" targetProject="${targetJavaProject}">
+            <property name="rootClass" value="com.sample.springboot.cache.redis.domain.base.BaseDO" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="${targetXMLPackage}"  targetProject="${targetResourcesProject}" />
+
+        <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
+
+        <table tableName="cache_redis_user" domainObjectName="UserDO" mapperName="UserMapper">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="cache_redis_dept" domainObjectName="DeptDO" mapperName="DeptMapper">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="cache_redis_order" domainObjectName="OrderDO" mapperName="OrderMapper">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="cache_redis_role" domainObjectName="RoleDO" mapperName="RoleMapper">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="cache_redis_user_role" domainObjectName="UserRoleDO" mapperName="UserRoleMapper">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+    </context>
+</generatorConfiguration>
