@@ -6,7 +6,7 @@
 <generatorConfiguration>
     <properties resource="application.properties"/>
 
-    <context id="cache" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    <context id="cache_redis" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
