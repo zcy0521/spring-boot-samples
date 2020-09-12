@@ -7,7 +7,7 @@
     <properties resource="application.properties"/>
 
     <!-- first -->
-    <context id="FirstTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    <context id="data_mybatis_first" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
@@ -51,7 +51,7 @@
 
 
     <!-- second -->
-    <context id="SecondTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    <context id="data_mybatis_second" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
