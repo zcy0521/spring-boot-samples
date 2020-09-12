@@ -37,7 +37,7 @@ public class JpaApplication {
 ```properties
 # DATASOURCE
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.datasource.url=jdbc:mysql://192.168.2.3:3306/jpa_samples
+spring.datasource.url=jdbc:mysql://192.168.2.3:3306/spring_boot_samples
 spring.datasource.username=root
 spring.datasource.password=root
 
