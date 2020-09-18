@@ -41,12 +41,12 @@
 
 ```java
 @Mapper(componentModel = "spring")
-public interface SampleMapper {
+public interface SampleVOMapper {
 
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
     
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -62,13 +62,13 @@ public interface SampleMapper {
 
 ```java
 @Mapper(componentModel = "spring")
-public interface SampleMapper {
+public interface SampleVOMapper {
 
     @Mapping(source = "sourceProperty", target = "targetProperty")
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
     
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -80,13 +80,13 @@ public interface SampleMapper {
 
 ```java
 @Mapper(componentModel = "spring")
-public interface SampleMapper {
+public interface SampleVOMapper {
 
     @Mapping(target = "ignoreProperty", ignore = true)
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
     
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -104,16 +104,16 @@ public interface SampleMapper {
 
 ```java
 @Mapper(componentModel = "spring")
-public interface SampleMapper {
+public interface SampleVOMapper {
 
     @Mapping(source = "sampleDate", target = "sampleDate", dateFormat = "yyyy-MM-dd")
     @Mapping(source = "sampleTime", target = "sampleTime", dateFormat = "HH:mm")
     @Mapping(source = "sampleDatetime", target = "sampleDatetime", dateFormat = "yyyy-MM-dd'T'HH:mm")
     @Mapping(source = "sampleAmount", target = "sampleAmount", numberFormat = "#.00")
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
 
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -153,12 +153,12 @@ public class SampleEnumMapper {
 @Mapper(componentModel = "spring",
         uses = {SampleEnumMapper.class}
 )
-public interface SampleMapper {
+public interface SampleVOMapper {
 
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
 
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -169,21 +169,21 @@ public interface SampleMapper {
 - 编写自定义装饰器
 
 ```java
-public abstract class SampleMapperDecorator implements SampleMapper {
+public abstract class SampleVOMapperDecorator implements SampleVOMapper {
 
     @Autowired
-    private SampleMapper sampleMapper;
+    private SampleVOMapper sampleVOMapper;
 
     @Override
-    public SampleVO toVO(SampleDO sample) {
-        SampleVO sampleVO = sampleMapper.toVO(sample);
+    public SampleVO from(SampleDO sample) {
+        SampleVO sampleVO = sampleVOMapper.from(sample);
         // 自定义规则
         return sampleVO;
     }
 
     @Override
-    public SampleDO fromVO(SampleVO sampleVO) {
-        SampleDO sample = sampleMapper.fromVO(sampleVO);
+    public SampleDO to(SampleVO sampleVO) {
+        SampleDO sample = sampleVOMapper.to(sampleVO);
         // 自定义规则
         return sample;
     }
@@ -194,13 +194,13 @@ public abstract class SampleMapperDecorator implements SampleMapper {
 
 ```java
 @Mapper(componentModel = "spring")
-@DecoratedWith(SampleMapperDecorator.class)
-public interface SampleMapper {
+@DecoratedWith(SampleVOMapperDecorator.class)
+public interface SampleVOMapper {
 
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
 
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
 }
 ```
 
@@ -210,16 +210,16 @@ public interface SampleMapper {
 
 ```java
 @Mapper(componentModel = "spring")
-public interface SampleMapper {
+public interface SampleVOMapper {
 
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
     
-    List<SampleVO> toVOs(List<SampleDO> samples);
+    List<SampleVO> listFrom(List<SampleDO> samples);
     
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
     
-    List<SampleDO> fromVOs(List<SampleVO> sampleVOs);
+    List<SampleDO> listTo(List<SampleVO> sampleVOs);
 }
 ```
 
@@ -235,18 +235,18 @@ public interface SampleMapper {
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface SampleMapper {
+public interface SampleVOMapper {
 
-    SampleVO toVO(SampleDO sample);
+    SampleVO from(SampleDO sample);
     
-    @InheritConfiguration(name = "toVO")
-    void updateVOFromSample(SampleDO sample, @MappingTarget SampleVO sampleVO);
+    @InheritConfiguration(name = "from")
+    void updateFrom(SampleDO sample, @MappingTarget SampleVO sampleVO);
     
-    @InheritInverseConfiguration(name = "toVO")
-    SampleDO fromVO(SampleVO sampleVO);
+    @InheritInverseConfiguration(name = "from")
+    SampleDO to(SampleVO sampleVO);
     
-    @InheritConfiguration(name = "fromVO")
-    void updateUserFromUserDTO(UserDTO userDTO, @MappingTarget User user);
+    @InheritConfiguration(name = "to")
+    void updateTo(UserDTO userDTO, @MappingTarget User user);
 }
 ```
 

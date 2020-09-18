@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SampleMapperTest {
+public class SampleVOMapperTest {
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -34,12 +34,12 @@ public class SampleMapperTest {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Autowired
-    private SampleMapper sampleMapper;
+    private SampleVOMapper sampleVOMapper;
 
     @Test
-    public void toVO() {
+    public void testFrom() {
         SampleDO sample = createSampleDO(1L);
-        SampleVO sampleVO = sampleMapper.toVO(sample);
+        SampleVO sampleVO = sampleVOMapper.from(sample);
 
         assertThat(sampleVO.getId(), is(sample.getId()));
         assertThat(sampleVO.getSampleString(), is(sample.getSampleString()));
@@ -53,13 +53,13 @@ public class SampleMapperTest {
     }
 
     @Test
-    public void toVOs() {
+    public void testListFrom() {
         List<SampleDO> samples = new ArrayList<>();
         for (int i = 1; i <= 20; i++) {
             samples.add(createSampleDO((long) i));
         }
 
-        List<SampleVO> sampleVOs = sampleMapper.toVOs(samples);
+        List<SampleVO> sampleVOs = sampleVOMapper.listFrom(samples);
         for (SampleVO sampleVO : sampleVOs) {
             Long id = sampleVO.getId();
             int index = Math.toIntExact(id) - 1;
@@ -78,14 +78,14 @@ public class SampleMapperTest {
     }
 
     @Test
-    public void updateVOFromSample() {
+    public void testUpdateFrom() {
         SampleDO source = createSampleDO(1L);
         SampleVO target = createSampleVO(1L);
 
         source.setSampleString(null);
         source.setSampleText(null);
         source.setSampleDatetime(null);
-        sampleMapper.updateVOFromSample(source, target);
+        sampleVOMapper.updateFrom(source, target);
 
         assertThat(target.getSampleString(), is(notNullValue()));
         assertThat(target.getSampleText(), is(notNullValue()));
@@ -100,9 +100,9 @@ public class SampleMapperTest {
     }
 
     @Test
-    public void fromVO() {
+    public void testTo() {
         SampleVO sampleVO = createSampleVO(1L);
-        SampleDO sample = sampleMapper.fromVO(sampleVO);
+        SampleDO sample = sampleVOMapper.to(sampleVO);
 
         assertThat(sample.getId(), is(sampleVO.getId()));
         assertThat(sample.getSampleString(), is(sampleVO.getSampleString()));
@@ -116,13 +116,13 @@ public class SampleMapperTest {
     }
 
     @Test
-    public void fromVOs() {
+    public void testListTo() {
         List<SampleVO> sampleVOs = new ArrayList<>();
         for (int i = 1; i <= 20; i++) {
             sampleVOs.add(createSampleVO((long) i));
         }
 
-        List<SampleDO> samples = sampleMapper.fromVOs(sampleVOs);
+        List<SampleDO> samples = sampleVOMapper.listTo(sampleVOs);
         for (SampleDO sample : samples) {
             Long id = sample.getId();
             int index = Math.toIntExact(id) - 1;
@@ -141,14 +141,14 @@ public class SampleMapperTest {
     }
 
     @Test
-    public void updateSampleFromVO() {
+    public void testUpdateTo() {
         SampleVO source = createSampleVO(1L);
         SampleDO target = createSampleDO(1L);
 
         source.setSampleString(null);
         source.setSampleText(null);
         source.setSampleDatetime(null);
-        sampleMapper.updateSampleFromVO(source, target);
+        sampleVOMapper.updateTo(source, target);
 
         assertThat(target.getSampleString(), is(notNullValue()));
         assertThat(target.getSampleText(), is(notNullValue()));
