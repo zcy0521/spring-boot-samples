@@ -25,6 +25,7 @@
         <module>spring-boot-sample-data-jpa</module>
         <module>spring-boot-sample-data-redis</module>
         <module>spring-boot-sample-cache-redis</module>
+        <module>spring-boot-sample-mapstruct</module>
     </modules>
 
 </project>
