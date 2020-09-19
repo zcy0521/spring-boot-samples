@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class SampleVOMapper {
+public class SampleVOOrikaMapper {
 
     private MapperFactory mapperFactory;
 
     @Autowired
-    public SampleVOMapper(MapperFactory mapperFactory) {
+    public SampleVOOrikaMapper(MapperFactory mapperFactory) {
         mapperFactory.classMap(SampleDO.class, SampleVO.class)
                 .byDefault()
                 .customize(new CustomMapper<SampleDO, SampleVO>() {
