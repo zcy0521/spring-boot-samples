@@ -6,7 +6,7 @@
 
 [GitHub](https://github.com/mybatis/mybatis-3)
 
-### Spring Boot 集成
+## Spring Boot 集成
 
 [GitHub](https://github.com/mybatis/spring-boot-starter)
 
