@@ -33,7 +33,9 @@
 </dependencies>
 ```
 
-### 编写Mapper
+## Mapper
+
+### 属性名相同
 
 [Basic mappings](https://mapstruct.org/documentation/stable/reference/html/#basic-mappings)
 
@@ -51,8 +53,6 @@ public interface SampleVOMapper {
 ```
 
 > 反转配置`@InheritInverseConfiguration`与`@Mapping`同时使用时，只对同时配置了`source`和`target`的`@Mapping`生效。
-
-## Mapper
 
 ### 属性名不同
 
@@ -121,7 +121,7 @@ public interface SampleVOMapper {
 
 [Invoking other mappers](https://mapstruct.org/documentation/stable/reference/html/#invoking-other-mappers)
 
-- 编写EnumsMapper
+- 编写SampleEnumMapper
 
 ```java
 @Mapper(componentModel = "spring")
@@ -147,7 +147,7 @@ public class SampleEnumMapper {
 }
 ```
 
-- 应用EnumsMapper `@Mapper(uses = {SampleEnumMapper.class})`
+- 应用SampleEnumMapper `@Mapper(uses = {SampleEnumMapper.class})`
 
 ```java
 @Mapper(componentModel = "spring",
