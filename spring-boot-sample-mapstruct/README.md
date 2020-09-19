@@ -240,13 +240,13 @@ public interface SampleVOMapper {
     SampleVO from(SampleDO sample);
     
     @InheritConfiguration(name = "from")
-    void updateFrom(SampleDO sample, @MappingTarget SampleVO sampleVO);
+    void updateFrom(SampleDO source, @MappingTarget SampleVO target);
     
     @InheritInverseConfiguration(name = "from")
     SampleDO to(SampleVO sampleVO);
     
     @InheritConfiguration(name = "to")
-    void updateTo(UserDTO userDTO, @MappingTarget User user);
+    void updateTo(UserDTO source, @MappingTarget User target);
 }
 ```
 

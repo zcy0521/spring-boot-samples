@@ -24,7 +24,7 @@ public interface SampleVOMapper {
     List<SampleVO> listFrom(List<SampleDO> samples);
 
     @InheritConfiguration(name = "from")
-    void updateFrom(SampleDO sample, @MappingTarget SampleVO sampleVO);
+    void updateFrom(SampleDO source, @MappingTarget SampleVO target);
 
     @InheritInverseConfiguration(name = "from")
     @Mapping(target = "gmtCreate", ignore = true)
@@ -34,6 +34,6 @@ public interface SampleVOMapper {
     List<SampleDO> listTo(List<SampleVO> sampleVOs);
 
     @InheritConfiguration(name = "to")
-    void updateTo(SampleVO sampleVO, @MappingTarget SampleDO sample);
+    void updateTo(SampleVO source, @MappingTarget SampleDO target);
 
 }
