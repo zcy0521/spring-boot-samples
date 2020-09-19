@@ -26,6 +26,7 @@
         <module>spring-boot-sample-data-redis</module>
         <module>spring-boot-sample-cache-redis</module>
         <module>spring-boot-sample-mapstruct</module>
+        <module>spring-boot-sample-orika</module>
     </modules>
 
 </project>
