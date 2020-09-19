@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SampleVOMapperTest {
+public class SampleVOMapStructMapperTest {
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -34,7 +34,7 @@ public class SampleVOMapperTest {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Autowired
-    private SampleVOMapper sampleVOMapper;
+    private SampleVOMapStructMapper sampleVOMapper;
 
     @Test
     public void testFrom() {

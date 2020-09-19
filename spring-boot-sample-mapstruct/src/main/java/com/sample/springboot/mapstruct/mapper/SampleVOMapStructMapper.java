@@ -1,7 +1,7 @@
 package com.sample.springboot.mapstruct.mapper;
 
 import com.sample.springboot.mapstruct.domain.SampleDO;
-import com.sample.springboot.mapstruct.mapper.decorator.SampleVOMapperDecorator;
+import com.sample.springboot.mapstruct.mapper.decorator.SampleVOMapStructMapperDecorator;
 import com.sample.springboot.mapstruct.mapper.enums.SampleEnumMapper;
 import com.sample.springboot.mapstruct.vo.SampleVO;
 import org.mapstruct.*;
@@ -12,8 +12,8 @@ import java.util.List;
         uses = {SampleEnumMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-@DecoratedWith(SampleVOMapperDecorator.class)
-public interface SampleVOMapper {
+@DecoratedWith(SampleVOMapStructMapperDecorator.class)
+public interface SampleVOMapStructMapper {
 
     @Mapping(source = "sampleDate", target = "sampleDate", dateFormat = "yyyy-MM-dd")
     @Mapping(source = "sampleTime", target = "sampleTime", dateFormat = "HH:mm")
