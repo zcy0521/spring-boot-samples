@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "`jpa_first`")
@@ -31,26 +30,23 @@ public class FirstDO extends BaseDO {
     @Column(name="`sample_string`")
     private String sampleString;
 
-    @Column(name="`sample_text`", columnDefinition = "TEXT")
-    private String sampleText;
+    @Column(name="`sample_amount`")
+    private BigDecimal sampleAmount;
 
     @Column(name="`sample_date`", columnDefinition = "DATE")
     private LocalDate sampleDate;
 
-    @Column(name="`sample_time`", columnDefinition = "TIME")
-    private LocalTime sampleTime;
-
-    @Column(name="`sample_datetime`", columnDefinition = "TIMESTAMP")
-    private LocalDateTime sampleDatetime;
+    @Column(name="`sample_date_time`", columnDefinition = "TIMESTAMP")
+    private LocalDateTime sampleDateTime;
 
     @Column(name="`sample_enum`")
     @Convert(converter = SampleEnum.Converter.class)
     private SampleEnum sampleEnum;
 
-    @Column(name="`sample_amount`")
-    private BigDecimal sampleAmount;
+    @Column(name="`sample_text`", columnDefinition = "TEXT")
+    private String sampleText;
 
-    @Column(name="`sample_valid`")
-    private Boolean sampleValid;
+    @Column(name="`disabled`")
+    private Boolean disabled;
 
 }

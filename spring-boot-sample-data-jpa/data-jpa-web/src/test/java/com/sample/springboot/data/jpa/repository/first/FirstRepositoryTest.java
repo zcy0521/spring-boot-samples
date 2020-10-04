@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -35,18 +34,17 @@ public class FirstRepositoryTest {
     @Rollback(false)
     public void testSave() {
         FirstDO first = new FirstDO();
+        first.setGmtCreate(new Date());
         first.setSampleInteger(222);
         first.setSampleFloat(33.3f);
         first.setSampleDouble(55.5d);
         first.setSampleString("First");
-        first.setSampleText("This is the First Repository test");
+        first.setSampleAmount(new BigDecimal("22.20"));
         first.setSampleDate(LocalDate.of(2012, 3, 26));
-        first.setSampleTime(LocalTime.of(13, 26, 32));
-        first.setSampleDatetime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
+        first.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         first.setSampleEnum(SampleEnum.ENUM_B);
-        first.setSampleAmount(new BigDecimal(22.2d));
-        first.setSampleValid(true);
-        first.setGmtCreate(new Date());
+        first.setSampleText("This is the First Repository test");
+        first.setDisabled(false);
         first = firstRepository.save(first);
         assertNotNull(first.getId());
     }
