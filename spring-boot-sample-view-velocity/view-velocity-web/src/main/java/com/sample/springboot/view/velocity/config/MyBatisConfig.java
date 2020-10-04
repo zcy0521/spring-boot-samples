@@ -35,7 +35,7 @@ public class MyBatisConfig {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setTypeAliasesPackage("com.sample.springboot.view.velocity.domain");
-        // tk.mybatis.mapper.session.Configuration
+        // Configuration
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         sessionFactory.setConfiguration(configuration);
         // 自定义Enums处理
