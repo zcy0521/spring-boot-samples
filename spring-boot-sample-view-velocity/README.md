@@ -133,10 +133,19 @@ ENTRYPOINT ["java","-cp","app:app/lib/*","com.sample.springboot.view.velocity.Ve
 </build>
 ```
 
-- 镜像安装
+- 修改 `maven/conf/settings.xml`
+
+```xml
+<pluginGroups>
+    <pluginGroup>com.spotify</pluginGroup>
+</pluginGroups>
+```
+
+- 安装并推送镜像
 
 ```shell script
-mvn dockerfile:build -Ddockerfile.repository=<your_username>/<project.artifactId>
+alias sudo='sudo -E env "PATH=$PATH"'
+sudo mvn dockerfile:build -Ddockerfile.repository=<your_username>/<project.artifactId>
 mvn deploy -Ddockerfile.repository=<your_username>/<project.artifactId>
 ```
 
@@ -144,14 +153,6 @@ mvn deploy -Ddockerfile.repository=<your_username>/<project.artifactId>
 
 ```shell script
 sudo docker run <your_username>/<project.artifactId>
-```
-
-- 推送 Docker Hub
-
-```shell script
-sudo docker images
-sudo docker login
-sudo docker push <your_username>/<project.artifactId>
 ```
 
 ## 热部署
