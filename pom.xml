@@ -27,6 +27,7 @@
         <module>spring-boot-sample-cache-redis</module>
         <module>spring-boot-sample-mapstruct</module>
         <module>spring-boot-sample-orika</module>
+        <module>spring-boot-sample-view-velocity</module>
     </modules>
 
 </project>

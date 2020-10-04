@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sample.springboot</groupId>
+        <artifactId>spring-boot-samples</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>com.sample.springboot.view.velocity</groupId>
+    <artifactId>spring-boot-sample-view-velocity</artifactId>
+    <packaging>pom</packaging>
+    <name>Spring Boot Sample :: View :: Velocity</name>
+
+    <properties>
+        <guava.version>29.0-jre</guava.version>
+        <druid.version>1.1.24</druid.version>
+        <velocity.version>1.0.4.RELEASE</velocity.version>
+        <mapstruct.version>1.4.0.Final</mapstruct.version>
+        <mybatis.version>2.1.3</mybatis.version>
+        <mybatis-jsr310.version>1.0.2</mybatis-jsr310.version>
+        <mybatis-mapper.version>2.1.5</mybatis-mapper.version>
+        <mybatis-pagehelper.version>1.3.0</mybatis-pagehelper.version>
+        <mybatis-generator.version>1.4.0</mybatis-generator.version>
+        <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Durid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- Velocity -->
+            <dependency>
+                <groupId>com.alibaba.boot</groupId>
+                <artifactId>velocity-spring-boot-starter</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <!-- MapStruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- MyBatis -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter-test</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+
+            <!-- MyBatis Mapper -->
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper-spring-boot-starter</artifactId>
+                <version>${mybatis-mapper.version}</version>
+            </dependency>
+
+            <!-- MyBatis PageHelper -->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${mybatis-pagehelper.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>view-velocity-dao</module>
+        <module>view-velocity-service</module>
+        <module>view-velocity-web</module>
+    </modules>
+
+</project>
