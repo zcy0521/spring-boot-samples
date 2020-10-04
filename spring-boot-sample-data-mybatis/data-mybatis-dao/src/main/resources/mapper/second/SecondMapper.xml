@@ -9,12 +9,11 @@
     <result column="sample_float" jdbcType="REAL" property="sampleFloat" />
     <result column="sample_double" jdbcType="DOUBLE" property="sampleDouble" />
     <result column="sample_string" jdbcType="VARCHAR" property="sampleString" />
-    <result column="sample_date" jdbcType="DATE" property="sampleDate" />
-    <result column="sample_time" jdbcType="TIME" property="sampleTime" />
-    <result column="sample_datetime" jdbcType="TIMESTAMP" property="sampleDatetime" />
-    <result column="sample_enum" jdbcType="INTEGER" property="sampleEnum" />
     <result column="sample_amount" jdbcType="DECIMAL" property="sampleAmount" />
-    <result column="sample_valid" jdbcType="BIT" property="sampleValid" />
+    <result column="sample_date" jdbcType="DATE" property="sampleDate" />
+    <result column="sample_date_time" jdbcType="TIMESTAMP" property="sampleDateTime" />
+    <result column="sample_enum" jdbcType="INTEGER" property="sampleEnum" />
     <result column="sample_text" jdbcType="LONGVARCHAR" property="sampleText" />
+    <result column="disabled" jdbcType="BIT" property="disabled" />
   </resultMap>
 </mapper>

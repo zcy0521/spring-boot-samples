@@ -4,4 +4,6 @@ public interface Enums {
 
     Integer getValue();
 
+    String getLabel();
+
 }

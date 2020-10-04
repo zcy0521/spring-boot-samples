@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
@@ -26,18 +25,17 @@ public class SecondServiceTest {
     @Test
     public void testInsert() {
         SecondDO second = new SecondDO();
+        second.setGmtCreate(new Date());
         second.setSampleInteger(222);
         second.setSampleFloat(33.3f);
         second.setSampleDouble(55.5d);
         second.setSampleString("Second");
-        second.setSampleText("This is the Second Service test");
+        second.setSampleAmount(new BigDecimal("22.20"));
         second.setSampleDate(LocalDate.of(2012, 3, 26));
-        second.setSampleTime(LocalTime.of(13, 26, 32));
-        second.setSampleDatetime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
+        second.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         second.setSampleEnum(SampleEnum.ENUM_B);
-        second.setSampleAmount(new BigDecimal(22.2d));
-        second.setSampleValid(true);
-        second.setGmtCreate(new Date());
+        second.setSampleText("This is the Second Service test");
+        second.setDisabled(true);
         secondService.insert(second);
     }
 

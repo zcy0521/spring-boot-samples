@@ -12,12 +12,12 @@ public class BaseServiceImpl<T> implements BaseService<T> {
     /**
      * 默认显示第1页
      */
-    private static final int PAGE_NUMBER = 0;
+    private static final int NUMBER = 0;
 
     /**
      * 默认每页显示10条
      */
-    private static final int PAGE_SIZE = 10;
+    private static final int SIZE = 10;
 
     private BaseMapper<T> mapper;
 
@@ -97,22 +97,22 @@ public class BaseServiceImpl<T> implements BaseService<T> {
 
     /**
      * 开启分页
-     *
-     * https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/zh/HowToUse.md
-     *
-     * @param pageNumber 当前显示第几页 1 2 3 ...
-     * @param pageSize 当前页显示几条 1 2 3 ...
+     * @param number 当前页
+     * @param size 每页数据量
      */
-    private void startPage(int pageNumber, int pageSize) {
+    protected final void startPage(int number, int size) {
         // 处理page
-        if (pageNumber < 1) {
-            pageNumber = PAGE_NUMBER;
+        if (number < 1) {
+            number = NUMBER;
         }
         // 处理size
-        if (pageSize < 1) {
-            pageSize = PAGE_SIZE;
+        if (size < 1) {
+            size = SIZE;
         }
-        PageHelper.startPage(pageNumber, pageSize);
+        if (size > SIZE) {
+            size = SIZE;
+        }
+        PageHelper.startPage(number, size);
     }
 
 }

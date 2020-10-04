@@ -43,20 +43,32 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- mysql -->
+        <!-- commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- JDBC -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- durid -->
+        <!-- Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <!-- Durid -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- dao、service、generator -->
+        <!-- DAO、Service、Generator -->
         <dependency>
             <groupId>com.sample.springboot.data.mybatis</groupId>
             <artifactId>data-mybatis-dao</artifactId>

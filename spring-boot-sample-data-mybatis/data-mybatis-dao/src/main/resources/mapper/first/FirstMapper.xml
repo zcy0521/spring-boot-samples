@@ -9,12 +9,61 @@
     <result column="sample_float" jdbcType="REAL" property="sampleFloat" />
     <result column="sample_double" jdbcType="DOUBLE" property="sampleDouble" />
     <result column="sample_string" jdbcType="VARCHAR" property="sampleString" />
-    <result column="sample_date" jdbcType="DATE" property="sampleDate" />
-    <result column="sample_time" jdbcType="TIME" property="sampleTime" />
-    <result column="sample_datetime" jdbcType="TIMESTAMP" property="sampleDatetime" />
-    <result column="sample_enum" jdbcType="INTEGER" property="sampleEnum" />
     <result column="sample_amount" jdbcType="DECIMAL" property="sampleAmount" />
-    <result column="sample_valid" jdbcType="BIT" property="sampleValid" />
+    <result column="sample_date" jdbcType="DATE" property="sampleDate" />
+    <result column="sample_date_time" jdbcType="TIMESTAMP" property="sampleDateTime" />
+    <result column="sample_enum" jdbcType="INTEGER" property="sampleEnum" />
     <result column="sample_text" jdbcType="LONGVARCHAR" property="sampleText" />
+    <result column="disabled" jdbcType="BIT" property="disabled" />
   </resultMap>
+
+  <select id="selectAllByIds" resultMap="BaseResultMap">
+    select * from `mybatis_first`
+    <where>
+      <choose>
+        <when test="ids != null and ids.size() > 0">
+          `id` IN <foreach collection="ids" item="item" open="(" separator="," close=")">#{item}</foreach>
+        </when>
+        <otherwise>
+          `id` IS NULL
+        </otherwise>
+      </choose>
+    </where>
+  </select>
+
+  <select id="selectAllByExample" resultMap="BaseResultMap">
+    select * from `mybatis_first`
+    <where>
+      <if test="sampleInteger != null">
+        AND `sample_integer` = #{sampleInteger}
+      </if>
+      <if test="sampleString != null and sampleString != ''">
+        AND `sample_string` LIKE CONCAT('%', #{sampleString}, '%')
+      </if>
+      <if test="minAmount != null">
+        AND <![CDATA[ `sample_amount` >= #{minAmount} ]]>
+      </if>
+      <if test="maxAmount != null">
+        AND <![CDATA[ `sample_amount` <= #{maxAmount} ]]>
+      </if>
+      <if test="minDate != null">
+        AND <![CDATA[ `sample_date` >= #{minDate} ]]>
+      </if>
+      <if test="maxDate != null">
+        AND <![CDATA[ `sample_date` <= #{maxDate} ]]>
+      </if>
+      <if test="minDateTime != null">
+        AND <![CDATA[ `sample_date_time` >= #{minDateTime} ]]>
+      </if>
+      <if test="maxDateTime != null">
+        AND <![CDATA[ `sample_date_time` <= #{maxDateTime} ]]>
+      </if>
+      <if test="sampleEnums != null and sampleEnums.length > 0">
+        AND `sample_enum` IN <foreach collection="sampleEnums" item="item" open="(" separator="," close=")">#{item.value}</foreach>
+      </if>
+      <if test="disabled != null">
+        AND `disabled` = #{disabled}
+      </if>
+    </where>
+  </select>
 </mapper>
