@@ -108,7 +108,9 @@ ENTRYPOINT ["java","-cp","app:app/lib/*","com.sample.springboot.view.velocity.Ve
 
 ```shell script
 mvn clean package -Dmaven.test.skip
-mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+mkdir -p target/dependency
+cp <包含build模块的子项目>/target/*.jar target/
+cd target/dependency; jar -xf ../*.jar
 ```
 
 - 构建镜像
