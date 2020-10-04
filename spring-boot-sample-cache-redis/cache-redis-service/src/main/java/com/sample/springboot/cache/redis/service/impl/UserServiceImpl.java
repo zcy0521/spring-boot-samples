@@ -45,7 +45,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Cacheable
     public List<UserDO> findAll() {
         List<UserDO> users = userMapper.selectAll();
-        usersHandle(users);
+        handleUsers(users);
         return users;
     }
 
@@ -54,7 +54,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public List<UserDO> findAll(int pageNumber, int pageSize) {
         startPage(pageNumber, pageSize);
         List<UserDO> users = userMapper.selectAll();
-        usersHandle(users);
+        handleUsers(users);
         return users;
     }
 
@@ -66,7 +66,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 .orderByDesc("gmt_create")
                 .build();
         List<UserDO> users = userMapper.selectByExample(example);
-        usersHandle(users);
+        handleUsers(users);
         return users;
     }
 
@@ -81,7 +81,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 .build();
         startPage(pageNumber, pageSize);
         List<UserDO> users = userMapper.selectByExample(example);
-        usersHandle(users);
+        handleUsers(users);
         return users;
     }
 
@@ -93,7 +93,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         UserDO user = userMapper.selectByPrimaryKey(id);
-        userHandle(user);
+        handleUser(user);
         return user;
     }
 
@@ -109,7 +109,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 .where(buildWhereSqls(query))
                 .build();
         UserDO user = userMapper.selectOneByExample(example);
-        userHandle(user);
+        handleUser(user);
         return user;
     }
 
@@ -195,11 +195,11 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     /**
-     * users处理
+     * 处理users
      *
      * @param users 用户集合
      */
-    private void usersHandle(List<UserDO> users) {
+    private void handleUsers(List<UserDO> users) {
         if (CollectionUtils.isEmpty(users)) {
             return;
         }
@@ -251,11 +251,11 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     /**
-     * user处理
+     * 处理user
      *
      * @param user 用户对象
      */
-    private void userHandle(UserDO user) {
+    private void handleUser(UserDO user) {
         if (null == user) {
             return;
         }
