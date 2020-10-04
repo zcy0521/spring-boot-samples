@@ -15,6 +15,7 @@
     <name>Spring Boot Sample :: View :: Velocity</name>
 
     <properties>
+        <lombok.version>1.18.12</lombok.version>
         <guava.version>29.0-jre</guava.version>
         <druid.version>1.1.24</druid.version>
         <velocity.version>1.0.4.RELEASE</velocity.version>
@@ -28,6 +29,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
             <!-- Guava -->
             <dependency>
                 <groupId>com.google.guava</groupId>
