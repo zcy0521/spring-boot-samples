@@ -136,6 +136,7 @@ ENTRYPOINT ["java","-cp","app:app/lib/*","com.sample.springboot.view.velocity.Ve
 - 镜像安装
 
 ```shell script
+mvn dockerfile:build -Ddockerfile.repository=<your_username>/<project.artifactId>
 mvn deploy -Ddockerfile.repository=<your_username>/<project.artifactId>
 ```
 
