@@ -5,12 +5,12 @@ import com.sample.springboot.view.velocity.mybatis.handler.EnumsTypeHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.sql.DataSource;
 
@@ -36,7 +36,7 @@ public class MyBatisConfig {
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setTypeAliasesPackage("com.sample.springboot.view.velocity.domain");
         // tk.mybatis.mapper.session.Configuration
-        tk.mybatis.mapper.session.Configuration configuration = new tk.mybatis.mapper.session.Configuration();
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         sessionFactory.setConfiguration(configuration);
         // 自定义Enums处理
         TypeHandlerRegistry registry = configuration.getTypeHandlerRegistry();
