@@ -75,7 +75,7 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
 
-        <!-- DAO、Service、Generator -->
+        <!-- DAO、Service -->
         <dependency>
             <groupId>com.sample.springboot.view.velocity</groupId>
             <artifactId>view-velocity-dao</artifactId>
@@ -84,11 +84,6 @@
         <dependency>
             <groupId>com.sample.springboot.view.velocity</groupId>
             <artifactId>view-velocity-service</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sample.springboot.view.velocity</groupId>
-            <artifactId>view-velocity-generator</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

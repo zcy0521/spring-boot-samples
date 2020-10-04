@@ -104,16 +104,11 @@ COPY ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.sample.springboot.view.velocity.VelocityApplication"]
 ```
 
-- 打包
+- 打包并解压 `fat jar`
 
 ```shell script
 mvn clean package -Dmaven.test.skip
-```
-
-- 解压 `fat jar`
-
-```shell script
-$ mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 ```
 
 - 构建镜像
