@@ -80,7 +80,7 @@ spring.velocity.toolboxConfigLocation=/toolbox/tools.xml
 [Running as a Packaged Application](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-running-as-a-packaged-application)
 
 ```shell script
-mvn clean package install -Dmaven.test.skip
+mvn clean package -Dmaven.test.skip
 java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
@@ -104,58 +104,40 @@ COPY ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.sample.springboot.view.velocity.VelocityApplication"]
 ```
 
-- 修改 `pom.xml`
-
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <version>${dockerfile-maven.version}</version>
-            <executions>
-                <execution>
-                    <id>default</id>
-                    <goals>
-                        <goal>build</goal>
-                        <goal>push</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <tag>${project.version}</tag>
-                <buildArgs>
-                    <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                </buildArgs>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-```
-
-- 修改 `maven/conf/settings.xml`
-
-```xml
-<pluginGroups>
-    <pluginGroup>com.spotify</pluginGroup>
-</pluginGroups>
-```
-
-- 安装并推送镜像
+- 打包
 
 ```shell script
-alias sudo='sudo -E env "PATH=$PATH"'
-sudo mvn dockerfile:build -Ddockerfile.repository=<your_username>/<project.artifactId>
-mvn deploy -Ddockerfile.repository=<your_username>/<project.artifactId>
+mvn clean package -Dmaven.test.skip
+```
+
+- 解压 `fat jar`
+
+```shell script
+$ mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+```
+
+- 构建镜像
+
+```shell script
+sudo docker build -t <your_username>/<project.artifactId> .
 ```
 
 - 本地运行
 
 ```shell script
-sudo docker run <your_username>/<project.artifactId>
+sudo docker run -d --name app -p 8080:8080 <your_username>/<project.artifactId>
 ```
 
-## 热部署
+- 上传镜像
+
+```shell script
+sudo docker images
+sudo docker tag <project.version> <your_username>/<project.artifactId>
+sudo docker login
+sudo docker push <your_username>/<project.artifactId>
+```
+
+### 热部署
 
 [Developer Tools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-devtools)
 
