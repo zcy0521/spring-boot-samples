@@ -83,12 +83,12 @@
         <dependency>
             <groupId>com.sample.springboot.view.velocity</groupId>
             <artifactId>view-velocity-dao</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sample.springboot.view.velocity</groupId>
             <artifactId>view-velocity-service</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
