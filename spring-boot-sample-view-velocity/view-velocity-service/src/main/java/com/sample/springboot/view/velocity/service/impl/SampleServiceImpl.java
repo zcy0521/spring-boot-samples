@@ -127,4 +127,30 @@ public class SampleServiceImpl extends BaseService implements SampleService {
         return sampleMapper.disabledByIds(ids);
     }
 
+    @Override
+    public int deleteAll() {
+        return sampleMapper.deleteAll();
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        if (null == id) {
+            log.error("ID must not be null!");
+            throw new IllegalArgumentException("ID must not be null!");
+        }
+
+        int rows = sampleMapper.deleteById(id);
+        return rows > 0;
+    }
+
+    @Override
+    public int deleteByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            log.error("IDs must not be null!");
+            throw new IllegalArgumentException("IDs must not be null!");
+        }
+
+        return sampleMapper.deleteByIds(ids);
+    }
+
 }

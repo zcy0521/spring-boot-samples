@@ -7,38 +7,25 @@ import org.mapstruct.Mapper;
 public class SampleEnumMapper {
 
     /**
-     * SampleEnum -> Integer
+     * 后台返回页面
+     * sampleEnum=null返回null 新增页面选择框不会被默认选中
      */
     public Integer toValue(SampleEnum sampleEnum) {
         if (null == sampleEnum) {
             return null;
         }
-        return sampleEnum.getValue();
+        return sampleEnum.value();
     }
 
     /**
-     * SampleEnum -> String
-     */
-    public String toLabel(SampleEnum sampleEnum) {
-        if (null == sampleEnum) {
-            return null;
-        }
-        return sampleEnum.getLabel();
-    }
-
-    /**
-     * Integer -> SampleEnum
+     * 页面传值给后台
+     * value=null设置为ENUM_UNKNOWN 保证数据库中`sample_enum`没有空值
      */
     public SampleEnum fromValue(Integer value) {
         if (null == value) {
             return SampleEnum.ENUM_UNKNOWN;
         }
-
-        SampleEnum sampleEnum = SampleEnum.of(value);
-        if (null == sampleEnum) {
-            throw new IllegalArgumentException(String.format("Cannot convert SampleEnum of value: %s", value));
-        }
-        return sampleEnum;
+        return SampleEnum.valueOf(value);
     }
 
 }

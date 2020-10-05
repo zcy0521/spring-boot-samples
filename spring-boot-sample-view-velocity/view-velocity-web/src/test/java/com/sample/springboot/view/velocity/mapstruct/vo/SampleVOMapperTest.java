@@ -28,7 +28,7 @@ public class SampleVOMapperTest {
         SampleVO.Query query = new SampleVO().getQuery();
         query.setSampleString("1");
         query.setMaxDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        query.setSampleEnums(new Integer[]{SampleEnum.ENUM_A.getValue(), SampleEnum.ENUM_B.getValue()});
+        query.setSampleEnums(new Integer[]{SampleEnum.ENUM_A.value(), SampleEnum.ENUM_B.value()});
 
         SampleQuery sampleQuery = mapper.toSampleQuery(query);
         assertThat(sampleQuery, notNullValue());

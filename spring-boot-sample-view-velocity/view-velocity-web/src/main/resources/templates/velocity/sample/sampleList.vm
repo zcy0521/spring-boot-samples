@@ -5,46 +5,46 @@
     <div class="form-row">
         <div class="form-group col-md-2">
             <label for="sampleInteger">整形</label>
-            <input type="number" class="form-control" name="sampleInteger" value="$!query.sampleInteger">
+            <input type="number" class="form-control" name="sampleInteger" value="$!{query.sampleInteger}">
         </div>
         <div class="form-group col-md-2">
             <label for="sampleString">字符串</label>
-            <input type="text" class="form-control" name="sampleString" value="$!query.sampleString">
+            <input type="text" class="form-control" name="sampleString" value="$!{query.sampleString}">
         </div>
         <div class="form-group col-md-2">
             <label for="minAmount">最小金额</label>
-            <input type="number" class="form-control" name="minAmount" value="$!query.minAmount">
+            <input type="number" class="form-control" name="minAmount" value="$!{query.minAmount}">
         </div>
         <div class="form-group col-md-2">
             <label for="maxAmount">最大金额</label>
-            <input type="number" class="form-control" name="maxAmount" value="$!query.maxAmount">
+            <input type="number" class="form-control" name="maxAmount" value="$!{query.maxAmount}">
         </div>
         <div class="form-group col-md-2">
             <label for="minDate">最小日期</label>
-            <input type="date" class="form-control" name="minDate" value="$!query.minDate">
+            <input type="date" class="form-control" name="minDate" value="$!{query.minDate}">
         </div>
         <div class="form-group col-md-2">
             <label for="maxDate">最大日期</label>
-            <input type="date" class="form-control" name="maxDate" value="$!query.maxDate">
+            <input type="date" class="form-control" name="maxDate" value="$!{query.maxDate}">
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-2">
             <label for="minDateTime">最小日期时间</label>
-            <input type="datetime-local" class="form-control" name="minDateTime" value="$!query.minDateTime">
+            <input type="datetime-local" class="form-control" name="minDateTime" value="$!{query.minDateTime}">
         </div>
         <div class="form-group col-md-2">
             <label for="maxDateTime">最大日期时间</label>
-            <input type="datetime-local" class="form-control" name="maxDateTime" value="$!query.maxDateTime">
+            <input type="datetime-local" class="form-control" name="maxDateTime" value="$!{query.maxDateTime}">
         </div>
         <div class="form-group col-md-2">
             <label for="sampleEnums">类型</label>
             <select class="selectpicker form-control border" multiple title="请选择" name="sampleEnums">
-                #foreach ($item in $sampleEnums)
-                    #if($query.sampleEnums.contains($item.value))
-                        <option value="$item.value" selected>$item.label</option>
+                #foreach ($item in ${sampleEnums})
+                    #if(${query.sampleEnums.contains(${item.value})})
+                        <option value="${item.value}" selected>${item.label}</option>
                     #else
-                        <option value="$item.value">$item.label</option>
+                        <option value="${item.value}">${item.label}</option>
                     #end
                 #end
             </select>
@@ -79,25 +79,25 @@
         </tr>
         </thead>
         <tbody>
-            #foreach ($sample in $samples)
+            #foreach ($sample in ${samples})
             <tr>
                 <td>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="$sample.id" onclick="tbodyCheckboxClick(this)">
+                        <input class="form-check-input" type="checkbox" value="${sample.id}" onclick="tbodyCheckboxClick(this)">
                     </div>
                 </td>
-                <td>$!sample.sampleInteger</td>
-                <td>$!sample.sampleFloat</td>
-                <td>$!sample.sampleDouble</td>
-                <td>$!sample.sampleString</td>
-                <td>$!sample.sampleDate</td>
-                <td>$!sample.sampleDateTime.replace('T',' ')</td>
-                <td>$!sample.sampleAmount</td>
-                <td>$enums.getSampleEnumLabel($!sample.sampleEnum)</td>
+                <td>$!{sample.sampleInteger}</td>
+                <td>$!{sample.sampleFloat}</td>
+                <td>$!{sample.sampleDouble}</td>
+                <td>$!{sample.sampleString}</td>
+                <td>$!{sample.sampleDate}</td>
+                <td>$!{sample.sampleDateTime.replace("T", " ")}</td>
+                <td>$!{sample.sampleAmount}</td>
+                <td>$SampleEnum.valueOf($sample.sampleEnum).label</td>
                 <td>
-                    <button type="button" class="btn btn-outline-info" onclick="get($sample.id)">查看</button>
-                    <button type="button" class="btn btn-outline-warning" onclick="update($sample.id)">更新</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="deleteById($sample.id)">删除</button>
+                    <button type="button" class="btn btn-outline-info" onclick="get(${sample.id})">查看</button>
+                    <button type="button" class="btn btn-outline-warning" onclick="update(${sample.id})">更新</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="deleteById(${sample.id})">删除</button>
                 </td>
             </tr>
             #end
@@ -111,8 +111,8 @@
      */
     function list() {
         var queryForm = $('#query');
-        queryForm.find('input[name="number"]').val($page.number);
-        queryForm.find('input[name="size"]').val($page.size);
+        queryForm.find('input[name="number"]').val(${page.number});
+        queryForm.find('input[name="size"]').val(${page.size});
         $.ajax({
             url: queryForm.attr('action'),
             method: 'GET',
@@ -147,8 +147,8 @@
     function create() {
         var queryForm = $('#query');
         queryForm.attr('action', '${request.contextPath}/samples/create/');
-        queryForm.find('input[name="number"]').val($page.number);
-        queryForm.find('input[name="size"]').val($page.size);
+        queryForm.find('input[name="number"]').val(${page.number});
+        queryForm.find('input[name="size"]').val(${page.size});
         queryForm.submit();
     }
 
@@ -159,8 +159,8 @@
     function update(id) {
         var queryForm = $('#query');
         queryForm.attr('action', '${request.contextPath}/samples/update/' + id);
-        queryForm.find('input[name="number"]').val($page.number);
-        queryForm.find('input[name="size"]').val($page.size);
+        queryForm.find('input[name="number"]').val(${page.number});
+        queryForm.find('input[name="size"]').val(${page.size});
         queryForm.submit();
     }
 

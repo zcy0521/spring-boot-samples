@@ -57,6 +57,8 @@ public class SampleController {
      */
     @GetMapping(value = "create")
     public String create(@ModelAttribute("query") SampleVO.Query query, Model model) {
+        SampleDO sample = new SampleDO();
+        model.addAttribute("sample", sampleVOMapper.fromSample(sample));
         model.addAttribute("action", "samples/create");
         return "sample/sampleForm.vm";
     }

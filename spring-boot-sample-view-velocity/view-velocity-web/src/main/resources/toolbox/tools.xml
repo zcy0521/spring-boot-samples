@@ -36,7 +36,7 @@
         <tool class="org.apache.velocity.tools.generic.SortTool"/>
         <tool class="org.apache.velocity.tools.generic.XmlTool"/>
         <tool class="com.sample.springboot.view.velocity.tools.ArraysTool"/>
-        <tool class="com.sample.springboot.view.velocity.tools.EnumsTool"/>
+        <tool class="com.sample.springboot.view.velocity.tools.PageTool"/>
     </toolbox>
     <toolbox scope="request">
         <tool class="org.apache.velocity.tools.generic.ContextTool"/>

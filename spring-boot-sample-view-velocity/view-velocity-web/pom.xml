@@ -31,12 +31,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- devtools -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-        </dependency>
-
         <!-- commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>

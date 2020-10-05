@@ -1,22 +1,22 @@
 <!-- toastr -->
 <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
 
-#if($!message)
-    #if($status == "success")
+#if($!{message})
+    #if(${status} == "success")
     <script type="text/javascript">
-        toastr.success('$message');
+        toastr.success('${message}');
     </script>
-    #elseif($status == "warning")
+    #elseif(${status} == "warning")
     <script type="text/javascript">
-        toastr.warning('$message');
+        toastr.warning('${message}');
     </script>
-    #elseif($status == "error")
+    #elseif(${status} == "error")
     <script type="text/javascript">
-        toastr.error('$message');
+        toastr.error('${message}');
     </script>
     #else
     <script type="text/javascript">
-        toastr.info('$message');
+        toastr.info('${message}');
     </script>
     #end
 #end

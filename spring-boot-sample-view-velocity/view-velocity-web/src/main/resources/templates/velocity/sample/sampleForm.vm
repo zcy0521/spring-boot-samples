@@ -1,53 +1,53 @@
 <!-- SampleForm -->
-<form action="${request.contextPath}/$action" method="post">
+<form action="${request.contextPath}/${action}" method="post">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 
     <div class="form-row">
         <div class="form-group col-md-4">
             <label for="sampleInteger">整形</label>
-            <input type="number" step="any" class="form-control" name="sampleInteger" value="$!sample.sampleInteger" #if($action == "update") readonly #end>
+            <input type="number" step="any" class="form-control" name="sampleInteger" value="$!{sample.sampleInteger}" #if($action == "update") readonly #end>
         </div>
         <div class="form-group col-md-4">
             <label for="sampleFloat">单精度</label>
-            <input type="number" step="any" class="form-control" name="sampleFloat" value="$!sample.sampleFloat">
+            <input type="number" step="any" class="form-control" name="sampleFloat" value="$!{sample.sampleFloat}">
         </div>
         <div class="form-group col-md-4">
             <label for="sampleDouble">双精度</label>
-            <input type="number" step="any" class="form-control" name="sampleDouble" value="$!sample.sampleDouble">
+            <input type="number" step="any" class="form-control" name="sampleDouble" value="$!{sample.sampleDouble}">
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group col-md-12">
             <label for="sampleString">字符串</label>
-            <input type="text" class="form-control" name="sampleString" value="$!sample.sampleString">
+            <input type="text" class="form-control" name="sampleString" value="$!{sample.sampleString}">
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group col-md-12">
             <label for="sampleAmount">金额</label>
-            <input type="number" step="any" class="form-control" name="sampleAmount" value="$!sample.sampleAmount" #if($action == "update") readonly #end>
+            <input type="number" step="any" class="form-control" name="sampleAmount" value="$!{sample.sampleAmount}" #if($action == "update") readonly #end>
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group col-md-4">
             <label for="sampleDate">日期</label>
-            <input type="date" class="form-control" name="sampleDate" value="$!sample.sampleDate">
+            <input type="date" class="form-control" name="sampleDate" value="$!{sample.sampleDate}">
         </div>
         <div class="form-group col-md-4">
             <label for="sampleDateTime">日期时间</label>
-            <input type="datetime-local" class="form-control" name="sampleDateTime" value="$!sample.sampleDateTime">
+            <input type="datetime-local" class="form-control" name="sampleDateTime" value="$!{sample.sampleDateTime}">
         </div>
         <div class="form-group col-md-4">
             <label for="sampleEnum">类型</label>
             <select class="selectpicker form-control border" title="请选择" name="sampleEnum">
-                #foreach ($item in $sampleEnums)
-                    #if($sample.sampleEnum == $item.value)
-                        <option value="$item.value" selected>$item.label</option>
+                #foreach ($item in ${sampleEnums})
+                    #if(${sample.sampleEnum.equals(${item.value})})
+                        <option value="${item.value}" selected>${item.label}</option>
                     #else
-                        <option value="$item.value">$item.label</option>
+                        <option value="${item.value}">${item.label}</option>
                     #end
                 #end
             </select>
@@ -57,7 +57,7 @@
     <div class="form-row">
         <div class="form-group col-md-12">
             <label for="sampleText">文本</label>
-            <textarea class="form-control" rows="13" name="sampleText">$!sample.sampleText</textarea>
+            <textarea class="form-control" rows="13" name="sampleText">$!{sample.sampleText}</textarea>
         </div>
     </div>
 
@@ -66,18 +66,18 @@
     </div>
 
     <!-- Query -->
-    <input type="hidden" name="query.number" value="$!query.number">
-    <input type="hidden" name="query.size" value="$!query.size">
-    <input type="hidden" name="query.sampleInteger" value="$!query.sampleInteger">
-    <input type="hidden" name="query.sampleString" value="$!query.sampleString">
-    <input type="hidden" name="query.minAmount" value="$!query.minAmount">
-    <input type="hidden" name="query.maxAmount" value="$!query.maxAmount">
-    <input type="hidden" name="query.minDate" value="$!query.minDate">
-    <input type="hidden" name="query.maxDate" value="$!query.maxDate">
-    <input type="hidden" name="query.minTime" value="$!query.minTime">
-    <input type="hidden" name="query.maxTime" value="$!query.maxTime">
-    <input type="hidden" name="query.minDateTime" value="$!query.minDateTime">
-    <input type="hidden" name="query.maxDateTime" value="$!query.maxDateTime">
+    <input type="hidden" name="query.number" value="$!{query.number}">
+    <input type="hidden" name="query.size" value="$!{query.size}">
+    <input type="hidden" name="query.sampleInteger" value="$!{query.sampleInteger}">
+    <input type="hidden" name="query.sampleString" value="$!{query.sampleString}">
+    <input type="hidden" name="query.minAmount" value="$!{query.minAmount}">
+    <input type="hidden" name="query.maxAmount" value="$!{query.maxAmount}">
+    <input type="hidden" name="query.minDate" value="$!{query.minDate}">
+    <input type="hidden" name="query.maxDate" value="$!{query.maxDate}">
+    <input type="hidden" name="query.minTime" value="$!{query.minTime}">
+    <input type="hidden" name="query.maxTime" value="$!{query.maxTime}">
+    <input type="hidden" name="query.minDateTime" value="$!{query.minDateTime}">
+    <input type="hidden" name="query.maxDateTime" value="$!{query.maxDateTime}">
     <input type="hidden" name="query.sampleEnums" value="$arrays.toString($!query.sampleEnums)">
-    <input type="hidden" name="query.disabled" value="$!query.disabled">
+    <input type="hidden" name="query.disabled" value="$!{query.disabled}">
 </form>

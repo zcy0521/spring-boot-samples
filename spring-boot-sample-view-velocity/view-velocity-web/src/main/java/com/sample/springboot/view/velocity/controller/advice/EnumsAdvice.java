@@ -11,8 +11,8 @@ public class EnumsAdvice {
     @ModelAttribute
     public void addEnums(Model model) {
         // SampleEnum
-        SampleEnum[] sampleEnums = SampleEnum.values();
-        model.addAttribute("sampleEnums", sampleEnums);
+        model.addAttribute("SampleEnum", SampleEnum.class);
+        model.addAttribute("sampleEnums", SampleEnum.values());
     }
 
 }

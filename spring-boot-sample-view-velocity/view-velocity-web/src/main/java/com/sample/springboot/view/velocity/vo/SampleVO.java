@@ -25,9 +25,9 @@ public class SampleVO {
 
     private Integer sampleEnum;
 
-    private String sampleText;
-
     private Boolean disabled;
+
+    private String sampleText;
 
     private Query query = new Query();
 
@@ -40,12 +40,12 @@ public class SampleVO {
         /**
          * 默认查询第1页
          */
-        private Integer number = 1;
+        private int number = 1;
 
         /**
          * 默认每页显示9条
          */
-        private Integer size = 9;
+        private int size = 9;
 
         /**
          * 默认查询有效记录

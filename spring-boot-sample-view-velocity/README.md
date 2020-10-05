@@ -133,23 +133,3 @@ sudo docker tag <project.version> <your_username>/<project.artifactId>
 sudo docker login
 sudo docker push <your_username>/<project.artifactId>
 ```
-
-### 热部署
-
-[Developer Tools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-devtools)
-
-- 修改 `pom.xml`
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-devtools</artifactId>
-        <optional>true</optional>
-    </dependency>
-</dependencies>
-```
-
-- 配置 IntelliJ IDEA
-    - 使用 `Ctrl+Alt+S` 打开 `Settings | Build, Execution, Deployment | Compiler` 并 ☑ `Build project automatically`
-    - 使用 `Ctrl+Alt+Shift+/` 搜索 `Registry` 并 ☑ `complier.automark.allow.when.app.running`

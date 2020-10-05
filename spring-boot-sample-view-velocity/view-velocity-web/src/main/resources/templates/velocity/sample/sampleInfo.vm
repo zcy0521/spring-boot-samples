@@ -12,51 +12,51 @@
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="sampleInteger">整形</label>
-                            <input type="number" readonly class="form-control" name="sampleInteger" value="$!sample.sampleInteger">
+                            <input type="number" readonly class="form-control" name="sampleInteger" value="$!{sample.sampleInteger}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="sampleFloat">单精度</label>
-                            <input type="number" readonly class="form-control" name="sampleFloat" value="$!sample.sampleFloat">
+                            <input type="number" readonly class="form-control" name="sampleFloat" value="$!{sample.sampleFloat}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="sampleDouble">双精度</label>
-                            <input type="number" readonly class="form-control" name="sampleDouble" value="$!sample.sampleDouble">
+                            <input type="number" readonly class="form-control" name="sampleDouble" value="$!{sample.sampleDouble}">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="sampleString">字符串</label>
-                            <input type="text" readonly class="form-control" name="sampleString" value="$!sample.sampleString">
+                            <input type="text" readonly class="form-control" name="sampleString" value="$!{sample.sampleString}">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="sampleAmount">金额</label>
-                            <input type="number" readonly class="form-control" name="sampleAmount" value="$!sample.sampleAmount">
+                            <input type="number" readonly class="form-control" name="sampleAmount" value="$!{sample.sampleAmount}">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="sampleDate">日期</label>
-                            <input type="date" readonly class="form-control" name="sampleDate" value="$!sample.sampleDate">
+                            <input type="date" readonly class="form-control" name="sampleDate" value="$!{sample.sampleDate}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="sampleDateTime">日期时间</label>
-                            <input type="datetime-local" readonly class="form-control" name="sampleDateTime" value="$!sample.sampleDateTime">
+                            <input type="datetime-local" readonly class="form-control" name="sampleDateTime" value="$!{sample.sampleDateTime}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="sampleEnum">类型</label>
-                            <input type="text" readonly class="form-control" name="sampleEnum" value="$enums.getSampleEnumLabel($!sample.sampleEnum)">
+                            <input type="text" readonly class="form-control" name="sampleEnum" value="$SampleEnum.valueOf($!{sample.sampleEnum}).label">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="sampleText">文本</label>
-                            <textarea readonly class="form-control" rows="5" name="sampleText">$!sample.sampleText</textarea>
+                            <textarea readonly class="form-control" rows="5" name="sampleText">$!{sample.sampleText}</textarea>
                         </div>
                     </div>
                 </form>

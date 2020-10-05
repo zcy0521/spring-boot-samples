@@ -28,4 +28,10 @@ public interface SampleService {
 
     int disableByIds(Set<Long> ids);
 
+    int deleteAll();
+
+    boolean deleteById(Long id);
+
+    int deleteByIds(Set<Long> ids);
+
 }

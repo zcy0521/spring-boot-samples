@@ -8,27 +8,27 @@ public class Page {
     /**
      * 默认每页显示数据
      */
-    private static final Integer DEFAULT_SIZE = 10;
+    private static final int DEFAULT_SIZE = 10;
 
     /**
      * 当前页
      */
-    private Integer number;
+    private int number;
 
     /**
      * 每页数据量
      */
-    private Integer size;
+    private int size;
 
     /**
      * 总页数
      */
-    private Integer totalPages;
+    private int totalPages;
 
     /**
      * 总数据量
      */
-    private Integer totalElements;
+    private int totalElements;
 
     /**
      * @param number 当前页

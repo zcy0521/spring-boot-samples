@@ -1,8 +1,11 @@
 package com.sample.springboot.view.velocity.enums;
 
+import lombok.Getter;
+
 /**
  * 枚举示例
  */
+@Getter
 public enum SampleEnum implements Enums {
 
     ENUM_A(3, "枚举A"),
@@ -10,37 +13,34 @@ public enum SampleEnum implements Enums {
     ENUM_C(9, "枚举C"),
     ENUM_UNKNOWN(0, "枚举UNKNOWN");
 
-    private Integer value;
+    private final int value;
 
-    private String label;
+    private final String label;
 
-    SampleEnum(Integer value, String label) {
+    SampleEnum(int value, String label) {
         this.value = value;
         this.label = label;
     }
 
     @Override
-    public Integer getValue() {
-        return value;
+    public int value() {
+        return this.value;
     }
 
-    @Override
-    public String getLabel() {
-        return label;
-    }
-
-    public static SampleEnum of(Integer value){
-        if (null == value) {
-            return null;
+    public static SampleEnum valueOf(int value){
+        SampleEnum sampleEnum = resolve(value);
+        if (sampleEnum == null) {
+            throw new IllegalArgumentException("No matching constant for [" + value + "]");
         }
+        return sampleEnum;
+    }
 
-        SampleEnum[] values = SampleEnum.values();
-        for (SampleEnum sampleEnum : values) {
-            if (sampleEnum.value.equals(value)) {
+    public static SampleEnum resolve(int value) {
+        for (SampleEnum sampleEnum : values()) {
+            if (sampleEnum.value == value) {
                 return sampleEnum;
             }
         }
-
-        return SampleEnum.ENUM_UNKNOWN;
+        return null;
     }
 }

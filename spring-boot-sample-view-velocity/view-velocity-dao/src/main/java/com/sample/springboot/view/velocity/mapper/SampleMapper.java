@@ -29,8 +29,8 @@ public interface SampleMapper {
             @Result(column="sample_date", property="sampleDate", jdbcType = JdbcType.DATE),
             @Result(column="sample_date_time", property="sampleDateTime", jdbcType = JdbcType.TIMESTAMP),
             @Result(column="sample_enum", property="sampleEnum", jdbcType = JdbcType.INTEGER),
-            @Result(column="sample_text", property="sampleText", jdbcType = JdbcType.LONGVARCHAR),
-            @Result(column="disabled", property="disabled", jdbcType = JdbcType.BIT)
+            @Result(column="disabled", property="disabled", jdbcType = JdbcType.BIT),
+            @Result(column="sample_text", property="sampleText", jdbcType = JdbcType.LONGVARCHAR)
     })
     @SelectProvider(type = SampleSQLProvider.class, method = "selectAll")
     List<SampleDO> selectAll();

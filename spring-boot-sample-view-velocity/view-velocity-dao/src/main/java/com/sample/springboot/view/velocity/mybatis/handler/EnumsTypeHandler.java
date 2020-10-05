@@ -33,14 +33,14 @@ public class EnumsTypeHandler<E extends Enums> extends BaseTypeHandler<E> {
         if (enums != null) {
             this.enumMap = new HashMap<>(enums.length);
             for (E anEnum : enums) {
-                this.enumMap.put(anEnum.getValue(), anEnum);
+                this.enumMap.put(anEnum.value(), anEnum);
             }
         }
     }
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
-        ps.setInt(i, parameter.getValue());
+        ps.setInt(i, parameter.value());
     }
 
     @Override
@@ -80,7 +80,7 @@ public class EnumsTypeHandler<E extends Enums> extends BaseTypeHandler<E> {
     private E getEnum(int value) {
         E anEnum = enumMap.get(value);
         if (null == anEnum) {
-            throw new IllegalArgumentException("Cannot convert " + value + " to " + type.getSimpleName());
+            throw new IllegalArgumentException(type.getSimpleName() + " no matching constant for [" + value + "]");
         }
         return anEnum;
     }
