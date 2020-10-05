@@ -13,12 +13,7 @@ public class NumberConverter extends BidirectionalConverter<Number, String> {
     private final ThreadLocal<DecimalFormat> format = new ThreadLocal<>();
 
     public NumberConverter() {
-        this.pattern = "#.00";
-        DecimalFormat formatter = format.get();
-        if (formatter == null) {
-            formatter = new DecimalFormat(pattern);
-            format.set(formatter);
-        }
+        this("#.00");
     }
 
     public NumberConverter(String pattern) {

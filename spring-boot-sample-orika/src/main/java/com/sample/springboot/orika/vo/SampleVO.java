@@ -15,18 +15,16 @@ public class SampleVO {
 
     private String sampleString;
 
-    private String sampleText;
+    private String sampleAmount;
 
     private String sampleDate;
 
-    private String sampleTime;
-
-    private String sampleDatetime;
-
-    private String sampleAmount;
+    private String sampleDateTime;
 
     private Integer sampleEnum;
 
-    private Boolean sampleDisable;
+    private Boolean disabled;
+
+    private String sampleText;
 
 }

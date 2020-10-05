@@ -15,6 +15,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SampleDO extends BaseDO {
+
     private Integer sampleInteger;
 
     private Float sampleFloat;
@@ -23,17 +24,15 @@ public class SampleDO extends BaseDO {
 
     private String sampleString;
 
+    private BigDecimal sampleAmount;
+
     private LocalDate sampleDate;
 
-    private LocalTime sampleTime;
-
-    private LocalDateTime sampleDatetime;
+    private LocalDateTime sampleDateTime;
 
     private SampleEnum sampleEnum;
 
-    private BigDecimal sampleAmount;
-
-    private Boolean sampleDisable;
+    private Boolean disabled;
 
     private String sampleText;
 }

@@ -17,7 +17,6 @@ public class OrikaConfig {
         // 注册全局 converter
         ConverterFactory converterFactory = mapperFactory.getConverterFactory();
         converterFactory.registerConverter(new LocalDateConverter());
-        converterFactory.registerConverter(new LocalTimeConverter());
         converterFactory.registerConverter(new LocalDateTimeConverter());
         converterFactory.registerConverter(new NumberConverter());
         converterFactory.registerConverter(new SampleEnumConverter());

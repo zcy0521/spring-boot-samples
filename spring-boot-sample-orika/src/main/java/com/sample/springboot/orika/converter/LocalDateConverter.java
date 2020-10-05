@@ -14,12 +14,7 @@ public class LocalDateConverter extends BidirectionalConverter<LocalDate, String
     private final ThreadLocal<DateTimeFormatter> format = new ThreadLocal<>();
 
     public LocalDateConverter() {
-        this.pattern = "yyyy-MM-dd";
-        DateTimeFormatter formatter = format.get();
-        if (formatter == null) {
-            formatter = DateTimeFormatter.ofPattern(pattern);
-            format.set(formatter);
-        }
+        this("yyyy-MM-dd");
     }
 
     public LocalDateConverter(String pattern) {
