@@ -1,13 +1,6 @@
 package com.sample.springboot.mapstruct.vo;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 public class SampleVO {
@@ -22,18 +15,16 @@ public class SampleVO {
 
     private String sampleString;
 
-    private String sampleText;
+    private String sampleAmount;
 
     private String sampleDate;
 
-    private String sampleTime;
-
-    private String sampleDatetime;
-
-    private String sampleAmount;
+    private String sampleDateTime;
 
     private Integer sampleEnum;
 
-    private Boolean sampleDisable;
+    private Boolean disabled;
+
+    private String sampleText;
 
 }

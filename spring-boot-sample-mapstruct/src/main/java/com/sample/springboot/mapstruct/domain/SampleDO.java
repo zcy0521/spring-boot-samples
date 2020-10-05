@@ -5,13 +5,13 @@ import com.sample.springboot.mapstruct.enums.SampleEnum;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SampleDO extends BaseDO {
+
     private Integer sampleInteger;
 
     private Float sampleFloat;
@@ -20,17 +20,15 @@ public class SampleDO extends BaseDO {
 
     private String sampleString;
 
+    private BigDecimal sampleAmount;
+
     private LocalDate sampleDate;
 
-    private LocalTime sampleTime;
-
-    private LocalDateTime sampleDatetime;
+    private LocalDateTime sampleDateTime;
 
     private SampleEnum sampleEnum;
 
-    private BigDecimal sampleAmount;
-
-    private Boolean sampleDisable;
+    private Boolean disabled;
 
     private String sampleText;
 }
