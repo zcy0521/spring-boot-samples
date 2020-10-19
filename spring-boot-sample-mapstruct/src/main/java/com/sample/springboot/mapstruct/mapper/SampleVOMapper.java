@@ -1,9 +1,8 @@
 package com.sample.springboot.mapstruct.mapper;
 
+import com.sample.springboot.mapstruct.decorator.SampleVOMapperDecorator;
 import com.sample.springboot.mapstruct.domain.SampleDO;
-import com.sample.springboot.mapstruct.mapper.decorator.SampleVOMapperDecorator;
-import com.sample.springboot.mapstruct.mapper.enums.SampleEnumMapper;
-import com.sample.springboot.mapstruct.vo.SampleVO;
+import com.sample.springboot.mapstruct.model.SampleVO;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -19,19 +18,21 @@ public interface SampleVOMapper {
     @Mapping(source = "sampleDateTime", target = "sampleDateTime", dateFormat = "yyyy-MM-dd'T'HH:mm")
     @Mapping(target = "gmtCreate", ignore = true)
     @Mapping(target = "gmtModified", ignore = true)
-    SampleDO toSample(SampleVO sampleVO);
+    SampleDO convertTo(SampleVO vo);
 
-    List<SampleDO> toSamples(List<SampleVO> sampleVOs);
+    List<SampleDO> convertToList(List<SampleVO> voList);
 
-    @InheritConfiguration(name = "toSample")
-    void updateToSample(SampleVO source, @MappingTarget SampleDO target);
+    @InheritConfiguration(name = "convertTo")
+    @Mapping(target = "gmtModified", ignore = true)
+    @Mapping(target = "gmtCreate", ignore = true)
+    void updateTo(SampleVO source, @MappingTarget SampleDO target);
 
-    @InheritInverseConfiguration(name = "toSample")
-    SampleVO fromSample(SampleDO sample);
+    @InheritInverseConfiguration(name = "convertTo")
+    SampleVO convertFrom(SampleDO sample);
 
-    List<SampleVO> fromSamples(List<SampleDO> samples);
+    List<SampleVO> convertFromList(List<SampleDO> sampleList);
 
-    @InheritConfiguration(name = "fromSample")
-    void updateFromSample(SampleDO source, @MappingTarget SampleVO target);
+    @InheritConfiguration(name = "convertFrom")
+    void updateFrom(SampleDO source, @MappingTarget SampleVO target);
 
 }

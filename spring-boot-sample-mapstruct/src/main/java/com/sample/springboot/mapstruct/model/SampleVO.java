@@ -1,4 +1,4 @@
-package com.sample.springboot.mapstruct.vo;
+package com.sample.springboot.mapstruct.model;
 
 import lombok.Data;
 
