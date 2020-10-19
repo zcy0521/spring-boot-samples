@@ -1,6 +1,6 @@
 package com.sample.springboot.data.jpa.domain.second;
 
-import com.sample.springboot.data.jpa.domain.second.base.BaseDO;
+import com.sample.springboot.data.jpa.domain.base.BaseDO;
 import com.sample.springboot.data.jpa.enums.SampleEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,8 +45,5 @@ public class SecondDO extends BaseDO {
 
     @Column(name="`sample_text`", columnDefinition = "TEXT")
     private String sampleText;
-
-    @Column(name="`disabled`")
-    private Boolean disabled;
 
 }

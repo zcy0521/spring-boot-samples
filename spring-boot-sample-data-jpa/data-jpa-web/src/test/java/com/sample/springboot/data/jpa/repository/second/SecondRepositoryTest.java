@@ -34,6 +34,8 @@ public class SecondRepositoryTest {
     public void testSave() {
         SecondDO second = new SecondDO();
         second.setGmtCreate(new Date());
+        second.setDeleted(false);
+
         second.setSampleInteger(222);
         second.setSampleFloat(33.3f);
         second.setSampleDouble(55.5d);
@@ -43,7 +45,6 @@ public class SecondRepositoryTest {
         second.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         second.setSampleEnum(SampleEnum.ENUM_B);
         second.setSampleText("This is the Second Repository test");
-        second.setDisabled(false);
         second = secondRepository.save(second);
         assertNotNull(second.getId());
     }

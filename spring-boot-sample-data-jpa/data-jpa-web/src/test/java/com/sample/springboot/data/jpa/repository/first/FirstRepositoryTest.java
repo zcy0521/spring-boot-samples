@@ -35,6 +35,8 @@ public class FirstRepositoryTest {
     public void testSave() {
         FirstDO first = new FirstDO();
         first.setGmtCreate(new Date());
+        first.setDeleted(false);
+
         first.setSampleInteger(222);
         first.setSampleFloat(33.3f);
         first.setSampleDouble(55.5d);
@@ -44,7 +46,6 @@ public class FirstRepositoryTest {
         first.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         first.setSampleEnum(SampleEnum.ENUM_B);
         first.setSampleText("This is the First Repository test");
-        first.setDisabled(false);
         first = firstRepository.save(first);
         assertNotNull(first.getId());
     }
