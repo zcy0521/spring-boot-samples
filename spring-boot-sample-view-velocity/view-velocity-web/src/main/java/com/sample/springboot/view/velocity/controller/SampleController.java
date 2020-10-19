@@ -1,10 +1,10 @@
 package com.sample.springboot.view.velocity.controller;
 
 import com.sample.springboot.view.velocity.domain.SampleDO;
-import com.sample.springboot.view.velocity.mapstruct.vo.SampleVOMapper;
+import com.sample.springboot.view.velocity.model.SampleVO;
+import com.sample.springboot.view.velocity.orika.mapper.SampleVOMapper;
 import com.sample.springboot.view.velocity.query.SampleQuery;
 import com.sample.springboot.view.velocity.service.SampleService;
-import com.sample.springboot.view.velocity.vo.SampleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +34,10 @@ public class SampleController {
     @GetMapping
     public String list(@ModelAttribute("query") SampleVO.Query query, Model model) {
         // 查询列表
-        SampleQuery sampleQuery = sampleVOMapper.toSampleQuery(query);
-        List<SampleDO> samples = sampleService.findAll(query.getNumber(), query.getSize(), sampleQuery);
-        model.addAttribute("samples", sampleVOMapper.fromSamples(samples));
+        SampleQuery sampleQuery = sampleVOMapper.convertTo(query);
+        List<SampleDO> samples = sampleService.findAll(sampleQuery, query.getNumber(), query.getSize());
+        List<SampleVO> voList = sampleVOMapper.convertFromList(samples);
+        model.addAttribute("samples", voList);
         // 分页信息 service中返回非原始请求中的page信息
         model.addAttribute("page", sampleQuery.getPage());
         return "sample/sampleList.vm";
@@ -48,7 +49,8 @@ public class SampleController {
     @GetMapping(value = "get/{id}")
     public String get(@PathVariable Long id, Model model) {
         SampleDO sample = sampleService.findById(id);
-        model.addAttribute("sample", sampleVOMapper.fromSample(sample));
+        SampleVO vo = sampleVOMapper.convertFrom(sample);
+        model.addAttribute("sample", vo);
         return "sample/sampleInfo.vm";
     }
 
@@ -58,18 +60,19 @@ public class SampleController {
     @GetMapping(value = "create")
     public String create(@ModelAttribute("query") SampleVO.Query query, Model model) {
         SampleDO sample = new SampleDO();
-        model.addAttribute("sample", sampleVOMapper.fromSample(sample));
+        SampleVO vo = sampleVOMapper.convertFrom(sample);
+        model.addAttribute("sample", vo);
         model.addAttribute("action", "samples/create");
         return "sample/sampleForm.vm";
     }
 
     @PostMapping(value = "create")
-    public String create(SampleVO sampleVO, RedirectAttributes redirectAttributes) {
+    public String create(SampleVO vo, RedirectAttributes redirectAttributes) {
         // 重定向查询请求
-        redirectQuery(sampleVO.getQuery(), redirectAttributes);
+        redirectQuery(vo.getQuery(), redirectAttributes);
 
         // 新增
-        SampleDO sample = sampleVOMapper.toSample(sampleVO);
+        SampleDO sample = sampleVOMapper.convertTo(vo);
         Long id = sampleService.insert(sample);
         boolean success = null != id && id > 0;
         redirectAttributes.addFlashAttribute("status", success ? "success" : "error");
@@ -83,7 +86,8 @@ public class SampleController {
     @GetMapping(value = "update/{id}")
     public String update(@PathVariable Long id, @ModelAttribute("query") SampleVO.Query query, Model model) {
         SampleDO sample = sampleService.findById(id);
-        model.addAttribute("sample", sampleVOMapper.fromSample(sample));
+        SampleVO vo = sampleVOMapper.convertFrom(sample);
+        model.addAttribute("sample", vo);
         model.addAttribute("action", "samples/update/" + id);
         return "sample/sampleForm.vm";
     }
@@ -101,7 +105,7 @@ public class SampleController {
         }
 
         // 更新
-        SampleDO sample = sampleVOMapper.toSample(sampleVO);
+        SampleDO sample = sampleVOMapper.convertTo(sampleVO);
         sample.setId(id);
         boolean success = sampleService.update(sample);
         redirectAttributes.addFlashAttribute("status", success ? "success" : "error");
@@ -120,7 +124,7 @@ public class SampleController {
         }
 
         // 删除
-        boolean success = sampleService.disableById(id);
+        boolean success = sampleService.deleteById(id);
         return success ?
                 ResponseEntity.ok("删除成功") :
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("删除失败");
@@ -137,7 +141,7 @@ public class SampleController {
         }
 
         // 批量删除
-        int size = sampleService.disableByIds(Arrays.stream(ids).collect(Collectors.toSet()));
+        int size = sampleService.deleteByIds(Arrays.stream(ids).collect(Collectors.toSet()));
         boolean success = size == ids.length;
         return success ?
                 ResponseEntity.ok(String.format("成功删除%s条记录", size)) :
@@ -156,7 +160,7 @@ public class SampleController {
         // 拼接返回url
         redirectAttributes.addAttribute("number", query.getNumber());
         redirectAttributes.addAttribute("size", query.getSize());
-        redirectAttributes.addAttribute("disabled", query.getDisabled());
+        redirectAttributes.addAttribute("deleted", query.getDeleted());
         redirectAttributes.addAttribute("sampleInteger", query.getSampleInteger());
         redirectAttributes.addAttribute("sampleString", query.getSampleString());
         redirectAttributes.addAttribute("minAmount", query.getMinAmount());

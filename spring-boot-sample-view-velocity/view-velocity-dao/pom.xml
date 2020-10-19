@@ -35,6 +35,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Orkia -->
+        <dependency>
+            <groupId>ma.glasnost.orika</groupId>
+            <artifactId>orika-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- MyBatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

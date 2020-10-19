@@ -21,11 +21,44 @@ public class SQL extends AbstractSQL<SQL> {
     }
 
     public SQL WHERE_IDS(Iterable ids) {
-        if (null == ids || Iterables.isEmpty(ids)) {
+        if (ids == null || Iterables.isEmpty(ids)) {
             getSelf().WHERE("`id` IS NULL");
-            return getSelf();
+        } else {
+            getSelf().WHERE("`id` IN (#{ids})");
         }
-        getSelf().WHERE("`id` IN (#{ids})");
+        return getSelf();
+    }
+
+    public SQL WHERE_IN(String column, String property, Iterable values) {
+        if (values == null || Iterables.isEmpty(values)) {
+            getSelf().WHERE(column + " IS NULL");
+        } else {
+            getSelf().WHERE(column + " IN (#{" + property + "})");
+        }
+        return getSelf();
+    }
+
+    public SQL WHERE_IN(String column, String property) {
+        getSelf().WHERE(column + " IN (#{" + property + "})");
+        return getSelf();
+    }
+
+    public SQL WHERE_LIKE(String column, String property) {
+        getSelf().WHERE(column + " LIKE CONCAT('%', #{" + property +"}, '%')");
+        return getSelf();
+    }
+
+    public SQL WHERE_CDATA(String conditions) {
+        getSelf().WHERE("<![CDATA[ " + conditions + " ]]>");
+        return getSelf();
+    }
+
+    public SQL WHERE_DELETED(Boolean deleted) {
+        if (deleted == null) {
+            getSelf().WHERE("`is_deleted` = 0");
+        } else {
+            getSelf().WHERE("`is_deleted` = #{deleted}");
+        }
         return getSelf();
     }
 
@@ -33,7 +66,7 @@ public class SQL extends AbstractSQL<SQL> {
         super.INSERT_INTO(tableName);
         getSelf().VALUES("`id`", "null");
         getSelf().VALUES("`gmt_create`", "NOW()");
-        getSelf().VALUES("`disabled`", "0");
+        getSelf().VALUES("`is_deleted`", "0");
         return getSelf();
     }
 
@@ -43,10 +76,10 @@ public class SQL extends AbstractSQL<SQL> {
         return getSelf();
     }
 
-    public SQL DISABLED(String tableName) {
+    public SQL DELETED(String tableName) {
         super.UPDATE(tableName);
         getSelf().SET("`gmt_modified` = NOW()");
-        getSelf().SET("`disabled` = 1");
+        getSelf().SET("`is_deleted` = 1");
         return getSelf();
     }
 

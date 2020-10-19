@@ -1,11 +1,13 @@
 package com.sample.springboot.view.velocity.service.impl;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.sample.springboot.view.velocity.domain.SampleDO;
 import com.sample.springboot.view.velocity.example.SampleExample;
 import com.sample.springboot.view.velocity.mapper.SampleMapper;
-import com.sample.springboot.view.velocity.mapstruct.query.SampleQueryMapper;
-import com.sample.springboot.view.velocity.query.SampleQuery;
 import com.sample.springboot.view.velocity.page.Page;
+import com.sample.springboot.view.velocity.query.SampleQuery;
 import com.sample.springboot.view.velocity.service.SampleService;
 import com.sample.springboot.view.velocity.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,9 +25,6 @@ public class SampleServiceImpl extends BaseService implements SampleService {
 
     @Autowired
     private SampleMapper sampleMapper;
-
-    @Autowired
-    private SampleQueryMapper queryMapper;
 
     @Override
     public List<SampleDO> findAll() {
@@ -39,118 +38,129 @@ public class SampleServiceImpl extends BaseService implements SampleService {
     }
 
     @Override
-    public List<SampleDO> findAll(SampleQuery query) {
-        SampleExample example = queryMapper.toSampleExample(query);
-        return sampleMapper.selectAllByExample(example);
-    }
+    public List<SampleDO> findAll(SampleQuery query, int number, int size) {
+        if (query == null) {
+            query = new SampleQuery();
+        }
 
-    @Override
-    public List<SampleDO> findAll(int number, int size, SampleQuery query) {
         // 查询条件
-        SampleExample example = queryMapper.toSampleExample(query);
+        SampleExample example = SampleExample.builder()
+                .sampleInteger(query.getSampleInteger())
+                .sampleString(query.getSampleString())
+                .minAmount(query.getMinAmount())
+                .maxAmount(query.getMaxAmount())
+                .minDate(query.getMinDate())
+                .maxDate(query.getMaxDate())
+                .minDateTime(query.getMinDateTime())
+                .maxDateTime(query.getMaxDateTime())
+                .sampleEnums(query.getSampleEnums())
+                .deleted(query.getDeleted())
+                .build();
 
         // 查询分页对象 优化number
         int totalElements = sampleMapper.countByExample(example);
         Page page = new Page(number, size, totalElements);
+        query.setPage(page);
 
         // 分页查询
         startPage(page.getNumber(), page.getSize());
-        List<SampleDO> samples = sampleMapper.selectAllByExample(example);
-        // 保存分页对象
-        query.setPage(page);
-        return samples;
+        return sampleMapper.selectAllByExample(example);
+    }
+
+    @Override
+    public List<SampleDO> findAllByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new IllegalArgumentException();
+        }
+
+        List<SampleDO> sampleList = Lists.newArrayList();
+
+        // IN 查询分区
+        Iterables.partition(ids, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _ids = Sets.newHashSet(idList);
+            List<SampleDO> _deptList = sampleMapper.selectAllByIds(_ids);
+            sampleList.addAll(_deptList);
+        });
+
+        return sampleList;
     }
 
     @Override
     public SampleDO findById(Long id) {
-        if (null == id) {
-            throw new IllegalArgumentException("ID must not be null!");
+        if (id == null) {
+            throw new IllegalArgumentException();
         }
 
         return sampleMapper.selectById(id);
     }
 
     @Override
-    public SampleDO findOne(SampleQuery query) {
-        SampleExample example = queryMapper.toSampleExample(query);
-        return sampleMapper.selectOneByExample(example);
-    }
-
-    @Override
     public Long insert(SampleDO entity) {
-        if (null == entity) {
-            throw new IllegalArgumentException("Entity must not be null!");
+        if (entity == null) {
+            throw new IllegalArgumentException();
         }
 
-        entity.setDisabled(false);
-        entity.setGmtCreate(new Date());
-        int rows = sampleMapper.insertSelective(entity);
-        if (rows > 0) {
-            return entity.getId();
-        } else {
-            return null;
-        }
+        int count = sampleMapper.insert(entity);
+        return count > 0 ? entity.getId() : 0L;
     }
 
     @Override
     public boolean update(SampleDO entity) {
-        if (null == entity) {
-            throw new IllegalArgumentException("Entity must not be null!");
-        }
-        if (null == entity.getId()) {
-            throw new IllegalArgumentException("ID must not be null!");
+        if (entity == null || entity.getId() == null) {
+            throw new IllegalArgumentException();
         }
 
-        entity.setGmtModified(new Date());
-        int rows = sampleMapper.updateSelective(entity);
-        return rows > 0;
-    }
-
-    @Override
-    public boolean disableById(Long id) {
-        if (null == id) {
-            log.error("ID must not be null!");
-            throw new IllegalArgumentException("ID must not be null!");
+        SampleDO sample = findById(entity.getId());
+        if (sample == null) {
+            throw new IllegalArgumentException();
         }
 
-        int rows = sampleMapper.disabledById(id);
-        return rows > 0;
-    }
-
-    @Override
-    public int disableByIds(Set<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            log.error("IDs must not be null!");
-            throw new IllegalArgumentException("IDs must not be null!");
-        }
-
-        return sampleMapper.disabledByIds(ids);
-    }
-
-    @Override
-    public int deleteAll() {
-        return sampleMapper.deleteAll();
+        int count = sampleMapper.updateSelective(entity);
+        return count > 0;
     }
 
     @Override
     public boolean deleteById(Long id) {
-        if (null == id) {
-            log.error("ID must not be null!");
-            throw new IllegalArgumentException("ID must not be null!");
+        if (id == null) {
+            throw new IllegalArgumentException();
         }
 
-        int rows = sampleMapper.deleteById(id);
-        return rows > 0;
+        SampleDO sample = findById(id);
+        if (sample == null) {
+            throw new IllegalArgumentException();
+        }
+
+        int count = sampleMapper.deleteById(id);
+        return count > 0;
     }
 
     @Override
     public int deleteByIds(Set<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
-            log.error("IDs must not be null!");
-            throw new IllegalArgumentException("IDs must not be null!");
+            throw new IllegalArgumentException();
         }
 
-        return sampleMapper.deleteByIds(ids);
+        List<SampleDO> sampleList = findAllByIds(ids);
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+
+        Set<Long> sampleIds = sampleList.stream()
+                .map(SampleDO::getId)
+                .collect(Collectors.toSet());
+
+        // IN 删除分区
+        Iterables.partition(sampleIds, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _sampleIds = Sets.newHashSet(idList);
+            sampleMapper.deleteByIds(_sampleIds);
+        });
+
+        return sampleIds.size();
+    }
+
+    @Override
+    public int deleteAll() {
+        return sampleMapper.deleteAll();
     }
 
 }

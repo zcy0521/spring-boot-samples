@@ -1,6 +1,7 @@
 package com.sample.springboot.view.velocity.mapper;
 
 import com.sample.springboot.view.velocity.domain.SampleDO;
+import com.sample.springboot.view.velocity.enums.SampleEnum;
 import com.sample.springboot.view.velocity.example.SampleExample;
 import com.sample.springboot.view.velocity.mapper.sql.SampleSQLProvider;
 import com.sample.springboot.view.velocity.mybatis.scripting.ForeachDriver;
@@ -21,6 +22,7 @@ public interface SampleMapper {
             @Result(column="id", property="id", jdbcType = JdbcType.BIGINT, id=true),
             @Result(column="gmt_create", property="gmtCreate", jdbcType = JdbcType.TIMESTAMP),
             @Result(column="gmt_modified", property="gmtModified", jdbcType = JdbcType.TIMESTAMP),
+            @Result(column="is_deleted", property="deleted", jdbcType = JdbcType.BIT),
             @Result(column="sample_integer", property="sampleInteger", jdbcType = JdbcType.INTEGER),
             @Result(column="sample_float", property="sampleFloat", jdbcType = JdbcType.REAL),
             @Result(column="sample_double", property="sampleDouble", jdbcType = JdbcType.DOUBLE),
@@ -29,7 +31,6 @@ public interface SampleMapper {
             @Result(column="sample_date", property="sampleDate", jdbcType = JdbcType.DATE),
             @Result(column="sample_date_time", property="sampleDateTime", jdbcType = JdbcType.TIMESTAMP),
             @Result(column="sample_enum", property="sampleEnum", jdbcType = JdbcType.INTEGER),
-            @Result(column="disabled", property="disabled", jdbcType = JdbcType.BIT),
             @Result(column="sample_text", property="sampleText", jdbcType = JdbcType.LONGVARCHAR)
     })
     @SelectProvider(type = SampleSQLProvider.class, method = "selectAll")
@@ -37,22 +38,17 @@ public interface SampleMapper {
 
     @Lang(ForeachDriver.class)
     @ResultMap("sampleResult")
-    @SelectProvider(type = SampleSQLProvider.class, method = "selectAllByIds")
-    List<SampleDO> selectAllByIds(@Param("ids") Set<Long> ids);
+    @SelectProvider(type = SampleSQLProvider.class, method = "selectAllByExample")
+    List<SampleDO> selectAllByExample(SampleExample example);
 
     @Lang(ForeachDriver.class)
     @ResultMap("sampleResult")
-    @SelectProvider(type = SampleSQLProvider.class, method = "selectAllByExample")
-    List<SampleDO> selectAllByExample(SampleExample example);
+    @SelectProvider(type = SampleSQLProvider.class, method = "selectAllByIds")
+    List<SampleDO> selectAllByIds(@Param("ids") Set<Long> ids);
 
     @ResultMap("sampleResult")
     @SelectProvider(type = SampleSQLProvider.class, method = "selectById")
     SampleDO selectById(@Param("id") Long id);
-
-    @Lang(ForeachDriver.class)
-    @ResultMap("sampleResult")
-    @SelectProvider(type = SampleSQLProvider.class, method = "selectOneByExample")
-    SampleDO selectOneByExample(SampleExample example);
 
     @InsertProvider(type = SampleSQLProvider.class, method = "insert")
     @SelectKey(statement = "SELECT LAST_INSERT_ID()", keyColumn = "`id`", keyProperty = "id", resultType = Long.class, before = false)
@@ -68,22 +64,15 @@ public interface SampleMapper {
     @UpdateProvider(type = SampleSQLProvider.class, method = "updateSelective")
     int updateSelective(SampleDO entity);
 
-    @UpdateProvider(type = SampleSQLProvider.class, method = "disabledById")
-    int disabledById(@Param("id") Long id);
-
-    @Lang(ForeachDriver.class)
-    @UpdateProvider(type = SampleSQLProvider.class, method = "disabledByIds")
-    int disabledByIds(@Param("ids") Set<Long> ids);
-
-    @DeleteProvider(type = SampleSQLProvider.class, method = "deleteAll")
-    int deleteAll();
-
-    @DeleteProvider(type = SampleSQLProvider.class, method = "deleteById")
+    @UpdateProvider(type = SampleSQLProvider.class, method = "deleteById")
     int deleteById(@Param("id") Long id);
 
     @Lang(ForeachDriver.class)
-    @DeleteProvider(type = SampleSQLProvider.class, method = "deleteByIds")
+    @UpdateProvider(type = SampleSQLProvider.class, method = "deleteByIds")
     int deleteByIds(@Param("ids") Set<Long> ids);
+
+    @DeleteProvider(type = SampleSQLProvider.class, method = "deleteAll")
+    int deleteAll();
 
     @SelectProvider(type = SampleSQLProvider.class, method = "countAll")
     int countAll();

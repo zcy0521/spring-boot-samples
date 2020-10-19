@@ -1,6 +1,7 @@
 package com.sample.springboot.view.velocity.example;
 
 import com.sample.springboot.view.velocity.enums.SampleEnum;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class SampleExample {
 
     private Integer sampleInteger;
@@ -28,6 +30,6 @@ public class SampleExample {
 
     private SampleEnum[] sampleEnums;
 
-    private Boolean disabled;
+    private Boolean deleted;
 
 }

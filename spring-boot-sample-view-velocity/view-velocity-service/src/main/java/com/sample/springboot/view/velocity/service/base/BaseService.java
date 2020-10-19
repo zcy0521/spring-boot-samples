@@ -17,6 +17,11 @@ public class BaseService {
     private static final int SIZE = 10;
 
     /**
+     * IN 查询分区大小
+     */
+    protected static final int PARTITION_SIZE = 100;
+
+    /**
      * 开启分页
      * @param number 当前页
      * @param size 每页数据量

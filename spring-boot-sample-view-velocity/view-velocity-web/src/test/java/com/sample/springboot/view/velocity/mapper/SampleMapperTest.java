@@ -6,7 +6,6 @@ import com.sample.springboot.view.velocity.domain.SampleDO;
 import com.sample.springboot.view.velocity.enums.SampleEnum;
 import com.sample.springboot.view.velocity.example.SampleExample;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -19,12 +18,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -110,10 +105,11 @@ public class SampleMapperTest {
 
     @Test
     public void testSelectAllByExample() {
-        SampleExample example = new SampleExample();
-        example.setSampleString("1");
-        example.setMaxDate(LocalDate.now());
-        example.setSampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B});
+        SampleExample example = SampleExample.builder()
+                .sampleString("1")
+                .maxDate(LocalDate.now())
+                .sampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B})
+                .build();
         List<SampleDO> samples = mapper.selectAllByExample(example);
         int count = mapper.countByExample(example);
         assertThat(samples, hasSize(count));
@@ -125,11 +121,11 @@ public class SampleMapperTest {
         List<SampleDO> samples = mapper.selectAllByIds(ids);
         assertThat(samples, hasSize(2));
 
-        List<SampleDO> nullSamples = mapper.selectAllByIds(null);
-        assertThat(nullSamples, hasSize(0));
+        samples = mapper.selectAllByIds(null);
+        assertThat(samples, hasSize(0));
 
-        List<SampleDO> emptySamples = mapper.selectAllByIds(Sets.newHashSet());
-        assertThat(emptySamples, hasSize(0));
+        samples = mapper.selectAllByIds(Sets.newHashSet());
+        assertThat(samples, hasSize(0));
     }
 
     @Test
@@ -138,55 +134,13 @@ public class SampleMapperTest {
         SampleDO sample = mapper.selectById(id);
         assertThat(sample, notNullValue());
 
-        SampleDO nullSamples = mapper.selectById(null);
-        assertThat(nullSamples, nullValue());
-    }
-
-    @Test
-    public void testDisabledById() {
-        Long id = 1L;
-        int count = mapper.disabledById(id);
-        assertThat(count, is(1));
-
-        count = mapper.disabledById(null);
-        assertThat(count, is(0));
-    }
-
-    @Test
-    public void testDisabledByIds() {
-        Set<Long> ids = Sets.newHashSet(1L, 2L);
-        int count = mapper.disabledByIds(ids);
-        assertThat(count, is(2));
-
-        count = mapper.disabledByIds(null);
-        assertThat(count, is(0));
-
-        count = mapper.disabledByIds(Sets.newHashSet());
-        assertThat(count, is(0));
-    }
-
-    @Test
-    public void testCountAll() {
-        int count = mapper.countAll();
-        int expected = mapper.selectAll().size();
-        assertThat(count, is(expected));
-    }
-
-    @Test
-    public void testCountByExample() {
-        SampleExample example = new SampleExample();
-        example.setSampleString("1");
-        example.setMaxDate(LocalDate.now());
-        example.setSampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B});
-        int count = mapper.countByExample(example);
-        int expected = mapper.selectAllByExample(example).size();
-        assertThat(count, is(expected));
+        sample = mapper.selectById(null);
+        assertThat(sample, nullValue());
     }
 
     @Test
     public void testDeleteById() {
-        Long id = 1L;
-        int count = mapper.deleteById(id);
+        int count = mapper.deleteById(1L);
         assertThat(count, is(1));
 
         count = mapper.deleteById(null);
@@ -195,8 +149,7 @@ public class SampleMapperTest {
 
     @Test
     public void testDeleteByIds() {
-        Set<Long> ids = Sets.newHashSet(1L, 2L);
-        int count = mapper.deleteByIds(ids);
+        int count = mapper.deleteByIds(Sets.newHashSet(1L, 2L));
         assertThat(count, is(2));
 
         count = mapper.deleteByIds(null);
@@ -208,8 +161,27 @@ public class SampleMapperTest {
 
     @Test
     public void testDeleteAll() {
-        int count = mapper.deleteAll();
         int expected = mapper.countAll();
+        int count = mapper.deleteAll();
+        assertThat(count, is(expected));
+    }
+
+    @Test
+    public void testCountAll() {
+        int count = mapper.countAll();
+        int expected = mapper.selectAll().size();
+        assertThat(count, is(expected));
+    }
+
+    @Test
+    public void testCountByExample() {
+        SampleExample example = SampleExample.builder()
+                .sampleString("1")
+                .maxDate(LocalDate.now())
+                .sampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B})
+                .build();
+        int count = mapper.countByExample(example);
+        int expected = mapper.selectAllByExample(example).size();
         assertThat(count, is(expected));
     }
 

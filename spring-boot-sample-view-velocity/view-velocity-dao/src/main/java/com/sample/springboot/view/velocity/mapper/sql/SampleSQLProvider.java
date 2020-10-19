@@ -4,7 +4,6 @@ import com.sample.springboot.view.velocity.domain.SampleDO;
 import com.sample.springboot.view.velocity.example.SampleExample;
 import com.sample.springboot.view.velocity.mybatis.jdbc.SQL;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Set;
 
@@ -13,45 +12,61 @@ public class SampleSQLProvider {
     private static final String TABLE_NAME = "`view_velocity_sample`";
 
     public String selectAll() {
-        SQL sql = new SQL()
-                .SELECT(LIST_COLUMNS())
+        return new SQL()
+                .SELECT("`id`")
+                .SELECT("`sample_integer`")
+                .SELECT("`sample_float`")
+                .SELECT("`sample_double`")
+                .SELECT("`sample_string`")
+                .SELECT("`sample_amount`")
+                .SELECT("`sample_date`")
+                .SELECT("`sample_date_time`")
+                .SELECT("`sample_enum`")
                 .FROM(TABLE_NAME)
-                .ORDER_BY("`id` ASC");
-        return sql.toString();
-    }
-
-    public String selectAllByIds(@Param("ids") Set<Long> ids) {
-        SQL sql = new SQL()
-                .SELECT(LIST_COLUMNS())
-                .FROM(TABLE_NAME)
-                .WHERE_IDS(ids)
-                .ORDER_BY("`id` ASC");
-        return sql.toString();
+                .ORDER_BY("`id` ASC")
+                .toString();
     }
 
     public String selectAllByExample(SampleExample example) {
         SQL sql = new SQL()
-                .SELECT(LIST_COLUMNS())
+                .SELECT("`id`")
+                .SELECT("`sample_integer`")
+                .SELECT("`sample_float`")
+                .SELECT("`sample_double`")
+                .SELECT("`sample_string`")
+                .SELECT("`sample_amount`")
+                .SELECT("`sample_date`")
+                .SELECT("`sample_date_time`")
+                .SELECT("`sample_enum`")
                 .FROM(TABLE_NAME)
                 .ORDER_BY("`id` ASC");
         WHERE_EXAMPLE(sql, example);
         return sql.toString();
     }
 
-    public String selectById(@Param("id") Long id) {
-        SQL sql = new SQL()
-                .SELECT_ALL()
+    public String selectAllByIds(Set<Long> ids) {
+        return new SQL()
+                .SELECT("`id`")
+                .SELECT("`sample_integer`")
+                .SELECT("`sample_float`")
+                .SELECT("`sample_double`")
+                .SELECT("`sample_string`")
+                .SELECT("`sample_amount`")
+                .SELECT("`sample_date`")
+                .SELECT("`sample_date_time`")
+                .SELECT("`sample_enum`")
                 .FROM(TABLE_NAME)
-                .WHERE_ID();
-        return sql.toString();
+                .WHERE_IDS(ids)
+                .ORDER_BY("`id` ASC")
+                .toString();
     }
 
-    public String selectOneByExample(SampleExample example) {
-        SQL sql = new SQL()
+    public String selectById(Long id) {
+        return new SQL()
                 .SELECT_ALL()
-                .FROM(TABLE_NAME);
-        WHERE_EXAMPLE(sql, example);
-        return sql.toString();
+                .FROM(TABLE_NAME)
+                .WHERE_ID()
+                .toString();
     }
 
     /**
@@ -76,6 +91,8 @@ public class SampleSQLProvider {
     public String insertSelective(SampleDO entity) {
         SQL sql = new SQL()
                 .INSERT_INTO(TABLE_NAME);
+
+        // VALUES
         if (null != entity.getSampleInteger()) {
             sql.VALUES("`sample_integer`", "#{sampleInteger}");
         }
@@ -130,6 +147,8 @@ public class SampleSQLProvider {
         SQL sql = new SQL()
                 .UPDATE(TABLE_NAME)
                 .WHERE_ID();
+
+        // SET
         if (null != entity.getSampleInteger()) {
             sql.SET("`sample_integer` = #{sampleInteger}");
         }
@@ -160,16 +179,16 @@ public class SampleSQLProvider {
         return sql.toString();
     }
 
-    public String disabledById(@Param("id") Long id) {
+    public String deleteById(Long id) {
         return new SQL()
-                .DISABLED(TABLE_NAME)
+                .DELETED(TABLE_NAME)
                 .WHERE_ID()
                 .toString();
     }
 
-    public String disabledByIds(@Param("ids") Set<Long> ids) {
+    public String deleteByIds(Set<Long> ids) {
         return new SQL()
-                .DISABLED(TABLE_NAME)
+                .DELETED(TABLE_NAME)
                 .WHERE_IDS(ids)
                 .toString();
     }
@@ -177,20 +196,6 @@ public class SampleSQLProvider {
     public String deleteAll() {
         return new SQL()
                 .DELETE_FROM(TABLE_NAME)
-                .toString();
-    }
-
-    public String deleteById(@Param("id") Long id) {
-        return new SQL()
-                .DELETE_FROM(TABLE_NAME)
-                .WHERE_ID()
-                .toString();
-    }
-
-    public String deleteByIds(@Param("ids") Set<Long> ids) {
-        return new SQL()
-                .DELETE_FROM(TABLE_NAME)
-                .WHERE_IDS(ids)
                 .toString();
     }
 
@@ -205,27 +210,15 @@ public class SampleSQLProvider {
         SQL sql = new SQL()
                 .COUNT()
                 .FROM(TABLE_NAME);
+
         WHERE_EXAMPLE(sql, example);
+
         return sql.toString();
     }
 
     /**
-     * 列表查询字段
-     */
-    private String LIST_COLUMNS() {
-        return "`id`, " +
-                "`sample_integer`, " +
-                "`sample_float`, " +
-                "`sample_double`, " +
-                "`sample_string`, " +
-                "`sample_amount`, " +
-                "`sample_date`, " +
-                "`sample_date_time`, " +
-                "`sample_enum`";
-    }
-
-    /**
      * 将SampleExample信息动态拼入SQL
+     * IN查询需要@Lang处理SQL会被包裹<script></script> 因此 > >= < <= 需要包裹'<![CDATA[ conditions ]]'
      * @param sql SQL对象
      * @param example 查询条件
      */
@@ -237,32 +230,30 @@ public class SampleSQLProvider {
             sql.WHERE("`sample_integer` = #{sampleInteger}");
         }
         if (StringUtils.isNotBlank(example.getSampleString())) {
-            sql.WHERE("`sample_string` LIKE CONCAT('%', #{sampleString}, '%')");
+            sql.WHERE_LIKE("`sample_string`", "sampleString");
         }
         if (null != example.getMinAmount()) {
-            sql.WHERE("<![CDATA[ `sample_amount` >= #{minAmount} ]]>");
+            sql.WHERE_CDATA("`sample_amount` >= #{minAmount}");
         }
         if (null != example.getMaxAmount()) {
-            sql.WHERE("<![CDATA[ `sample_amount` <= #{maxAmount} ]]>");
+            sql.WHERE_CDATA("`sample_amount` <= #{maxAmount}");
         }
         if (null != example.getMinDate()) {
-            sql.WHERE("<![CDATA[ `sample_date` >= #{minDate} ]]>");
+            sql.WHERE_CDATA("`sample_date` >= #{minDate}");
         }
         if (null != example.getMaxDate()) {
-            sql.WHERE("<![CDATA[ `sample_date` <= #{maxDate} ]]>");
+            sql.WHERE_CDATA("`sample_date` <= #{maxDate}");
         }
         if (null != example.getMinDateTime()) {
-            sql.WHERE("<![CDATA[ `sample_date_time` >= #{minDateTime} ]]>");
+            sql.WHERE_CDATA("`sample_date_time` >= #{minDateTime}");
         }
         if (null != example.getMaxDateTime()) {
-            sql.WHERE("<![CDATA[ `sample_date_time` <= #{maxDateTime} ]]>");
+            sql.WHERE_CDATA("`sample_date_time` <= #{maxDateTime}");
         }
         if (null != example.getSampleEnums() && example.getSampleEnums().length > 0) {
-            sql.WHERE("`sample_enum` IN (#{sampleEnums.value})");
+            sql.WHERE_IN("`sample_enum`", "sampleEnums.value");
         }
-        if (null != example.getDisabled()) {
-            sql.WHERE("`disabled` = #{disabled}");
-        }
+        sql.WHERE_DELETED(example.getDeleted());
     }
 
 }

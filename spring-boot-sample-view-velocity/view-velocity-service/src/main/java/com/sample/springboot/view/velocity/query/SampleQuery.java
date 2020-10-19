@@ -37,6 +37,6 @@ public class SampleQuery {
 
     private SampleEnum[] sampleEnums;
 
-    private Boolean disabled;
+    private Boolean deleted;
 
 }

@@ -1,8 +1,8 @@
-package com.sample.springboot.view.velocity.mapstruct.vo;
+package com.sample.springboot.view.velocity.orika.mapper;
 
 import com.sample.springboot.view.velocity.enums.SampleEnum;
+import com.sample.springboot.view.velocity.model.SampleVO;
 import com.sample.springboot.view.velocity.query.SampleQuery;
-import com.sample.springboot.view.velocity.vo.SampleVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class SampleVOMapperTest {
     private SampleVOMapper mapper;
 
     @Test
-    public void testToSampleQuery() {
+    public void testConvertTo() {
         SampleVO.Query query = new SampleVO().getQuery();
         query.setSampleString("1");
         query.setMaxDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         query.setSampleEnums(new Integer[]{SampleEnum.ENUM_A.value(), SampleEnum.ENUM_B.value()});
 
-        SampleQuery sampleQuery = mapper.toSampleQuery(query);
+        SampleQuery sampleQuery = mapper.convertTo(query);
         assertThat(sampleQuery, notNullValue());
         assertThat(sampleQuery.getSampleEnums(), is(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B}));
     }

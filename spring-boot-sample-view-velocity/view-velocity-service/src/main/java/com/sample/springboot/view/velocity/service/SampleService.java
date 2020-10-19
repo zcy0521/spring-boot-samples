@@ -12,26 +12,20 @@ public interface SampleService {
 
     List<SampleDO> findAll(int number, int size);
 
-    List<SampleDO> findAll(SampleQuery query);
+    List<SampleDO> findAll(SampleQuery query, int number, int size);
 
-    List<SampleDO> findAll(int number, int size, SampleQuery query);
+    List<SampleDO> findAllByIds(Set<Long> ids);
 
     SampleDO findById(Long id);
-
-    SampleDO findOne(SampleQuery query);
 
     Long insert(SampleDO entity);
 
     boolean update(SampleDO entity);
 
-    boolean disableById(Long id);
-
-    int disableByIds(Set<Long> ids);
-
-    int deleteAll();
-
     boolean deleteById(Long id);
 
     int deleteByIds(Set<Long> ids);
+
+    int deleteAll();
 
 }

@@ -1,4 +1,4 @@
-package com.sample.springboot.view.velocity.vo;
+package com.sample.springboot.view.velocity.model;
 
 import lombok.Data;
 
@@ -25,9 +25,9 @@ public class SampleVO {
 
     private Integer sampleEnum;
 
-    private Boolean disabled;
-
     private String sampleText;
+
+    private Boolean deleted;
 
     private Query query = new Query();
 
@@ -50,7 +50,7 @@ public class SampleVO {
         /**
          * 默认查询有效记录
          */
-        private Boolean disabled = false;
+        private Boolean deleted = false;
 
         private Integer sampleInteger;
 
