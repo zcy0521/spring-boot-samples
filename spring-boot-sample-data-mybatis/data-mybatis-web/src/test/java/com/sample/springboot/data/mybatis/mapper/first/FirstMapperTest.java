@@ -39,17 +39,18 @@ public class FirstMapperTest {
 
     @Test
     public void testSelectAllByIds() {
-        Set<Long> ids = Sets.newHashSet(1L, 2L);
-        List<FirstDO> firsts = firstMapper.selectAllByIds(ids);
+        List<FirstDO> firsts = firstMapper.selectAllByIds(Sets.newHashSet(1L, 2L));
         assertThat(firsts, hasSize(2));
     }
 
     @Test
     public void testSelectAllByExample() {
-        FirstExample example = new FirstExample();
-        example.setSampleString("1");
-        example.setMaxDate(LocalDate.now());
-        example.setSampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B});
+        FirstExample example = FirstExample
+                .builder()
+                .sampleString("1")
+                .maxDate(LocalDate.now())
+                .sampleEnums(new SampleEnum[]{SampleEnum.ENUM_A, SampleEnum.ENUM_B})
+                .build();
         List<FirstDO> firsts = firstMapper.selectAllByExample(example);
         assertThat(firsts, hasSize(greaterThanOrEqualTo(0)));
     }

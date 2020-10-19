@@ -1,13 +1,15 @@
 package com.sample.springboot.data.mybatis.example.first;
 
 import com.sample.springboot.data.mybatis.enums.SampleEnum;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Builder
 public class FirstExample {
 
     private Integer sampleInteger;
@@ -28,6 +30,6 @@ public class FirstExample {
 
     private SampleEnum[] sampleEnums;
 
-    private Boolean disabled;
+    private Boolean deleted;
 
 }

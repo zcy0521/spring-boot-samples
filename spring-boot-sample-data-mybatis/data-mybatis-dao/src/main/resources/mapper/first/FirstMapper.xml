@@ -22,10 +22,10 @@
     <where>
       <choose>
         <when test="ids != null and ids.size() > 0">
-          `id` IN <foreach collection="ids" item="item" open="(" separator="," close=")">#{item}</foreach>
+          AND `id` IN <foreach collection="ids" item="item" open="(" separator="," close=")">#{item}</foreach>
         </when>
         <otherwise>
-          `id` IS NULL
+          AND `id` IS NULL
         </otherwise>
       </choose>
     </where>
@@ -61,9 +61,14 @@
       <if test="sampleEnums != null and sampleEnums.length > 0">
         AND `sample_enum` IN <foreach collection="sampleEnums" item="item" open="(" separator="," close=")">#{item.value}</foreach>
       </if>
-      <if test="deleted != null">
-        AND `is_deleted` = #{deleted}
-      </if>
+      <choose>
+        <when test="deleted != null">
+          AND `is_deleted` = #{deleted}
+        </when>
+        <otherwise>
+          AND `is_deleted` = 0
+        </otherwise>
+      </choose>
     </where>
   </select>
 </mapper>
