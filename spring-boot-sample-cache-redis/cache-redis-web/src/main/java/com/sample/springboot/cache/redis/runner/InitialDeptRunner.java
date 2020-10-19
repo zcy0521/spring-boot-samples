@@ -3,7 +3,6 @@ package com.sample.springboot.cache.redis.runner;
 import com.google.common.collect.Sets;
 import com.ibm.icu.text.NumberFormat;
 import com.sample.springboot.cache.redis.domain.*;
-import com.sample.springboot.cache.redis.mapper.DeptMapper;
 import com.sample.springboot.cache.redis.service.DeptService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
@@ -32,22 +31,18 @@ public class InitialDeptRunner implements ApplicationRunner {
     @Autowired
     private DeptService deptService;
 
-    @Autowired
-    private DeptMapper deptMapper;
-
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("初始化部门信息...");
 
         // 删除现有部门
-        deptMapper.deleteAll();
+        deptService.deleteAll();
 
         // 查询ROOT节点 没有就新创建一个
-        DeptDO root = deptMapper.selectTreeRoot();
+        Long rootId = deptService.findRootId();
 
         // 递归创建节点 第一层 创建2个节点
-        insertDept(Sets.newHashSet(root.getId()), 1, 2);
+        insertDept(Sets.newHashSet(rootId), 1, 2);
 
         log.info("初始化部门信息完成");
     }

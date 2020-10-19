@@ -74,7 +74,9 @@ public class DeptServiceImpl extends BaseService implements DeptService {
         // DB查询部门
         stopWatch.start("DB查询部门");
         List<DeptDO> deptList = deptMapper.selectTree();
-        Objects.requireNonNull(deptList);
+        if (CollectionUtils.isEmpty(deptList)) {
+            return;
+        }
         stopWatch.stop();
 
         // 计算拆分的hashMap个数
@@ -83,11 +85,13 @@ public class DeptServiceImpl extends BaseService implements DeptService {
         // DB查询部门管理员
         stopWatch.start("DB查询部门管理员");
         List<UserDO> adminList = findDeptAdmins(null);
-        Map<Long, List<UserDO>> deptAdminsMap = adminList.stream().collect(Collectors.groupingBy(
-                UserDO::getDeptId,
-                Collectors.mapping(Function.identity(), Collectors.toList())
-        ));
-        deptList.forEach(dept -> dept.setAdmins(deptAdminsMap.get(dept.getId())));
+        if (!CollectionUtils.isEmpty(adminList)) {
+            Map<Long, List<UserDO>> deptAdminsMap = adminList.stream().collect(Collectors.groupingBy(
+                    UserDO::getDeptId,
+                    Collectors.mapping(Function.identity(), Collectors.toList())
+            ));
+            deptList.forEach(dept -> dept.setAdmins(deptAdminsMap.get(dept.getId())));
+        }
         stopWatch.stop();
 
         // 处理节点

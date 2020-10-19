@@ -21,15 +21,12 @@ public class InitialRoleRunner implements ApplicationRunner {
     @Autowired
     private RoleService roleService;
 
-    @Autowired
-    private RoleService roleMapper;
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("初始化角色信息...");
 
         // 删除现有角色
-        roleMapper.deleteAll();
+        roleService.deleteAll();
 
         // 创建角色
         for (int i = 0; i < ROLE_NUM; i++) {

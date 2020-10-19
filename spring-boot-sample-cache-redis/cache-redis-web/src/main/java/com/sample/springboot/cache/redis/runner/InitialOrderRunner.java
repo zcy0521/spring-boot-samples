@@ -2,7 +2,6 @@ package com.sample.springboot.cache.redis.runner;
 
 import com.sample.springboot.cache.redis.domain.OrderDO;
 import com.sample.springboot.cache.redis.domain.UserDO;
-import com.sample.springboot.cache.redis.mapper.OrderMapper;
 import com.sample.springboot.cache.redis.mapper.UserMapper;
 import com.sample.springboot.cache.redis.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +29,6 @@ public class InitialOrderRunner implements ApplicationRunner {
     private OrderService orderService;
 
     @Autowired
-    private OrderMapper orderMapper;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Override
@@ -40,7 +36,7 @@ public class InitialOrderRunner implements ApplicationRunner {
         log.info("初始化订单信息...");
 
         // 删除订单
-        orderMapper.deleteAll();
+        orderService.deleteAll();
 
         // 用户ID
         Set<Long> userIds = userMapper.selectAll().stream().map(UserDO::getId).collect(Collectors.toSet());
