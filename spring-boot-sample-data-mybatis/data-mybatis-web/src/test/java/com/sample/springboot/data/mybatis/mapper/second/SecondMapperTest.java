@@ -34,6 +34,8 @@ public class SecondMapperTest {
     public void testInsert() {
         SecondDO second = new SecondDO();
         second.setGmtCreate(new Date());
+        second.setDeleted(false);
+
         second.setSampleInteger(222);
         second.setSampleFloat(33.3f);
         second.setSampleDouble(55.5d);
@@ -43,7 +45,6 @@ public class SecondMapperTest {
         second.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         second.setSampleEnum(SampleEnum.ENUM_B);
         second.setSampleText("This is the Second Mapper test");
-        second.setDisabled(false);
         secondMapper.insertSelective(second);
     }
 

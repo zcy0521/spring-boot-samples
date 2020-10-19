@@ -26,6 +26,8 @@ public class SecondServiceTest {
     public void testInsert() {
         SecondDO second = new SecondDO();
         second.setGmtCreate(new Date());
+        second.setDeleted(true);
+
         second.setSampleInteger(222);
         second.setSampleFloat(33.3f);
         second.setSampleDouble(55.5d);
@@ -35,7 +37,6 @@ public class SecondServiceTest {
         second.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         second.setSampleEnum(SampleEnum.ENUM_B);
         second.setSampleText("This is the Second Service test");
-        second.setDisabled(true);
         secondService.insert(second);
     }
 

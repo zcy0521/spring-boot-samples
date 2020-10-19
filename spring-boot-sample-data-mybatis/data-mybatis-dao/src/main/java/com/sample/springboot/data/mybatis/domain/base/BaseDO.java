@@ -1,4 +1,4 @@
-package com.sample.springboot.data.mybatis.domain.second.base;
+package com.sample.springboot.data.mybatis.domain.base;
 
 import lombok.Data;
 
@@ -19,5 +19,8 @@ public class BaseDO {
 
     @Column(name="`gmt_modified`")
     private Date gmtModified;
+
+    @Column(name="`is_deleted`")
+    private Boolean deleted;
 
 }

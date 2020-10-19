@@ -36,6 +36,6 @@ public class FirstQuery {
 
     private Integer[] sampleEnums;
 
-    private Boolean disable;
+    private Boolean deleted;
 
 }

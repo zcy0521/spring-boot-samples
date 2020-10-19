@@ -103,10 +103,10 @@ public class SecondServiceImpl extends BaseServiceImpl<SecondDO> implements Seco
             sqls.andIn(SecondDO::getSampleEnum, Arrays.stream(query.getSampleEnums()).collect(Collectors.toSet()));
         }
         // Disable
-        if(null != query.getDisable() && query.getDisable()){
-            sqls.andEqualTo(SecondDO::getDisabled, 1);
+        if(null != query.getDeleted() && query.getDeleted()){
+            sqls.andEqualTo(SecondDO::getDeleted, 1);
         } else {
-            sqls.andEqualTo(SecondDO::getDisabled, 0);
+            sqls.andEqualTo(SecondDO::getDeleted, 0);
         }
         return sqls;
     }

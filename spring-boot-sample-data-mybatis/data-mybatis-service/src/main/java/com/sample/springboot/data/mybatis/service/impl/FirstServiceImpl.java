@@ -103,10 +103,10 @@ public class FirstServiceImpl extends BaseServiceImpl<FirstDO> implements FirstS
             sqls.andIn(FirstDO::getSampleEnum, Arrays.stream(query.getSampleEnums()).collect(Collectors.toSet()));
         }
         // Disable
-        if(null != query.getDisable() && query.getDisable()){
-            sqls.andEqualTo(FirstDO::getDisabled, 1);
+        if(null != query.getDeleted() && query.getDeleted()){
+            sqls.andEqualTo(FirstDO::getDeleted, 1);
         } else {
-            sqls.andEqualTo(FirstDO::getDisabled, 0);
+            sqls.andEqualTo(FirstDO::getDeleted, 0);
         }
         return sqls;
     }

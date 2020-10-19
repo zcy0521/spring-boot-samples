@@ -36,6 +36,6 @@ public class SecondQuery {
 
     private Integer[] sampleEnums;
 
-    private Boolean disable;
+    private Boolean deleted;
 
 }

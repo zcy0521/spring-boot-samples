@@ -5,6 +5,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="is_deleted" jdbcType="BIT" property="deleted" />
     <result column="sample_integer" jdbcType="INTEGER" property="sampleInteger" />
     <result column="sample_float" jdbcType="REAL" property="sampleFloat" />
     <result column="sample_double" jdbcType="DOUBLE" property="sampleDouble" />
@@ -14,7 +15,6 @@
     <result column="sample_date_time" jdbcType="TIMESTAMP" property="sampleDateTime" />
     <result column="sample_enum" jdbcType="INTEGER" property="sampleEnum" />
     <result column="sample_text" jdbcType="LONGVARCHAR" property="sampleText" />
-    <result column="disabled" jdbcType="BIT" property="disabled" />
   </resultMap>
 
   <select id="selectAllByIds" resultMap="BaseResultMap">
@@ -61,8 +61,8 @@
       <if test="sampleEnums != null and sampleEnums.length > 0">
         AND `sample_enum` IN <foreach collection="sampleEnums" item="item" open="(" separator="," close=")">#{item.value}</foreach>
       </if>
-      <if test="disabled != null">
-        AND `disabled` = #{disabled}
+      <if test="deleted != null">
+        AND `is_deleted` = #{deleted}
       </if>
     </where>
   </select>

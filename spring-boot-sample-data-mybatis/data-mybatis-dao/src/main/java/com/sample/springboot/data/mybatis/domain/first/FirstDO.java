@@ -1,6 +1,6 @@
 package com.sample.springboot.data.mybatis.domain.first;
 
-import com.sample.springboot.data.mybatis.domain.first.base.BaseDO;
+import com.sample.springboot.data.mybatis.domain.base.BaseDO;
 import com.sample.springboot.data.mybatis.enums.SampleEnum;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,8 +39,5 @@ public class FirstDO extends BaseDO {
 
     @Column(name = "`sample_text`")
     private String sampleText;
-
-    @Column(name = "`disabled`")
-    private Boolean disabled;
 
 }

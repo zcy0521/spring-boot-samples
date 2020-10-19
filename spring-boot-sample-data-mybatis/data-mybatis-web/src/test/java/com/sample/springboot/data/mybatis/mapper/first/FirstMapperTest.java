@@ -69,6 +69,8 @@ public class FirstMapperTest {
     public void testInsert() {
         FirstDO first = new FirstDO();
         first.setGmtCreate(new Date());
+        first.setDeleted(false);
+
         first.setSampleInteger(222);
         first.setSampleFloat(33.3f);
         first.setSampleDouble(55.5d);
@@ -78,7 +80,6 @@ public class FirstMapperTest {
         first.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         first.setSampleEnum(SampleEnum.ENUM_B);
         first.setSampleText("This is the First Mapper test");
-        first.setDisabled(false);
         int count = firstMapper.insertSelective(first);
         assertThat(count, is(1));
     }
