@@ -13,17 +13,6 @@
     <packaging>jar</packaging>
     <name>Spring Boot Sample :: Cache :: Redis : Web</name>
 
-    <properties>
-        <!-- DAO 项目路径 -->
-        <dao.target.dir>${basedir}/../cache-redis-dao</dao.target.dir>
-        <!-- Generator 生成文件路径 -->
-        <targetJavaProject>${dao.target.dir}/src/main/java</targetJavaProject>
-        <targetModelPackage>com.sample.springboot.cache.redis.domain</targetModelPackage>
-        <targetMapperPackage>com.sample.springboot.cache.redis.mapper</targetMapperPackage>
-        <targetResourcesProject>${dao.target.dir}/src/main/resources</targetResourcesProject>
-        <targetXMLPackage>mapper</targetXMLPackage>
-    </properties>
-
     <dependencies>
         <!-- spring-boot -->
         <dependency>
@@ -36,30 +25,33 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- mysql -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- durid -->
+        <!-- Lombok -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+        </dependency>
+
+        <!-- JDBC -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
         <!-- commons-pool2 -->
@@ -68,26 +60,29 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-        <!-- dao、service、generator -->
+        <!-- Durid -->
         <dependency>
-            <groupId>com.sample.springboot.cache.redis</groupId>
-            <artifactId>cache-redis-mybatis-dao</artifactId>
-            <version>1.0.0</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- Orkia -->
+        <dependency>
+            <groupId>ma.glasnost.orika</groupId>
+            <artifactId>orika-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- dao、service -->
         <dependency>
             <groupId>com.sample.springboot.cache.redis</groupId>
-            <artifactId>cache-redis-redis-dao</artifactId>
-            <version>1.0.0</version>
+            <artifactId>cache-redis-dao</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sample.springboot.cache.redis</groupId>
             <artifactId>cache-redis-service</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sample.springboot.cache.redis</groupId>
-            <artifactId>cache-redis-generator</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -96,37 +91,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!-- MyBatis Generator -->
-            <plugin>
-                <groupId>org.mybatis.generator</groupId>
-                <artifactId>mybatis-generator-maven-plugin</artifactId>
-                <version>1.4.0</version>
-                <configuration>
-                    <!-- 配置文件generatorConfig.xml的位置 -->
-                    <configurationFile>${basedir}/src/main/resources/generator/generatorConfig.xml</configurationFile>
-                    <!-- 是否覆盖同名文件 -->
-                    <overwrite>true</overwrite>
-                    <!-- 是否将生成过程输出至控制台 -->
-                    <verbose>true</verbose>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.21</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sample.springboot.cache.redis</groupId>
-                        <artifactId>cache-redis-mybatis-dao</artifactId>
-                        <version>1.0.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sample.springboot.cache.redis</groupId>
-                        <artifactId>cache-redis-generator</artifactId>
-                        <version>1.0.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

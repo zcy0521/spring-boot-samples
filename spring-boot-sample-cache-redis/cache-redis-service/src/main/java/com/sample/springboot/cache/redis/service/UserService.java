@@ -4,26 +4,27 @@ import com.sample.springboot.cache.redis.domain.UserDO;
 import com.sample.springboot.cache.redis.query.UserQuery;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface UserService {
 
     List<UserDO> findAll();
 
-    List<UserDO> findAll(int pageNumber, int pageSize);
+    List<UserDO> findAll(UserQuery query, int number, int size);
 
-    List<UserDO> findAll(UserQuery query);
+    List<UserDO> findAllByIds(Set<Long> ids);
 
-    List<UserDO> findAll(UserQuery query, int pageNumber, int pageSize);
+    Map<Long, UserDO> findIdMapByIds(Set<Long> ids);
 
     UserDO findById(Long id);
 
-    UserDO findOne(UserQuery query);
-
     Long insert(UserDO entity);
 
-    boolean update(UserDO entity);
+    Boolean update(UserDO entity);
 
-    boolean deleteById(Long id);
+    Boolean deleteById(Long id);
+
+    int deleteAll();
 
 }

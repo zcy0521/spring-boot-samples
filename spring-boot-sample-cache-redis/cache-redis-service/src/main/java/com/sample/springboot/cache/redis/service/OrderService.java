@@ -10,20 +10,26 @@ public interface OrderService {
 
     List<OrderDO> findAll();
 
-    List<OrderDO> findAll(int pageNumber, int pageSize);
+    List<OrderDO> findAll(OrderQuery query, int number, int size);
 
-    List<OrderDO> findAll(OrderQuery query);
+    List<OrderDO> findAllByUserId(Long userId);
 
-    List<OrderDO> findAll(OrderQuery query, int pageNumber, int pageSize);
+    List<OrderDO> findAllByUserIds(Set<Long> userIds);
 
     OrderDO findById(Long id);
 
-    OrderDO findOne(OrderQuery query);
-
     Long insert(OrderDO entity);
 
-    boolean update(OrderDO entity);
+    Boolean update(OrderDO entity);
 
-    boolean deleteById(Long id);
+    Boolean deleteById(Long id);
+
+    int deleteByIds(Set<Long> ids);
+
+    int deleteByUserId(Long userId);
+
+    int deleteByUserIds(Set<Long> userIds);
+
+    int deleteAll();
 
 }

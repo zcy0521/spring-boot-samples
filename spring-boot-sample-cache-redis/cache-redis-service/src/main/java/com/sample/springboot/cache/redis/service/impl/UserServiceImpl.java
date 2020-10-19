@@ -1,197 +1,183 @@
 package com.sample.springboot.cache.redis.service.impl;
 
-import com.sample.springboot.cache.redis.common.CachingNames;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.sample.springboot.cache.redis.domain.*;
+import com.sample.springboot.cache.redis.example.UserExample;
 import com.sample.springboot.cache.redis.mapper.*;
+import com.sample.springboot.cache.redis.page.Page;
 import com.sample.springboot.cache.redis.query.UserQuery;
+import com.sample.springboot.cache.redis.service.DeptService;
+import com.sample.springboot.cache.redis.service.OrderService;
+import com.sample.springboot.cache.redis.service.RoleService;
 import com.sample.springboot.cache.redis.service.UserService;
 import com.sample.springboot.cache.redis.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import tk.mybatis.mapper.entity.Example;
-import tk.mybatis.mapper.weekend.WeekendSqls;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@CacheConfig(cacheNames = CachingNames.USER_CACHE)
 public class UserServiceImpl extends BaseService implements UserService {
+
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private DeptMapper deptMapper;
-
-    @Autowired
-    private OrderMapper orderMapper;
-
-    @Autowired
-    private RoleMapper roleMapper;
-
-    @Autowired
     private UserRoleMapper userRoleMapper;
 
+    @Autowired
+    private DeptAdminMapper deptAdminMapper;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private DeptService deptService;
+
+    @Autowired
+    private OrderService orderService;
+
     @Override
-    @Cacheable
     public List<UserDO> findAll() {
-        List<UserDO> users = userMapper.selectAll();
-        handleUsers(users);
-        return users;
+        return userMapper.selectAll();
     }
 
     @Override
-    @Cacheable(key = "#pageNumber.concat('-').concat(#pageSize)")
-    public List<UserDO> findAll(int pageNumber, int pageSize) {
-        startPage(pageNumber, pageSize);
-        List<UserDO> users = userMapper.selectAll();
-        handleUsers(users);
-        return users;
-    }
+    public List<UserDO> findAll(UserQuery query, int number, int size) {
+        if (query == null) {
+            query = new UserQuery();
+        }
 
-    @Override
-    @Cacheable
-    public List<UserDO> findAll(UserQuery query) {
-        Example example = Example.builder(UserDO.class)
-                .where(buildWhereSqls(query))
-                .orderByDesc("gmt_create")
+        // 查询条件
+        UserExample example = UserExample.builder()
+                .userName(query.getUserName())
+                .deptId(query.getDeptId())
+                .deptIds(query.getDeptIds())
+                .deleted(query.getDeleted())
                 .build();
-        List<UserDO> users = userMapper.selectByExample(example);
-        handleUsers(users);
-        return users;
-    }
 
+        // 查询分页对象 优化number
+        int totalElements = userMapper.countByExample(example);
+        Page page = new Page(number, size, totalElements);
+        query.setPage(page);
 
-
-    @Override
-    @Cacheable(key = "#pageNumber.concat('-').concat(#pageSize)")
-    public List<UserDO> findAll(UserQuery query, int pageNumber, int pageSize) {
-        Example example = Example.builder(UserDO.class)
-                .where(buildWhereSqls(query))
-                .orderByDesc("gmt_create")
-                .build();
-        startPage(pageNumber, pageSize);
-        List<UserDO> users = userMapper.selectByExample(example);
+        // 分页查询
+        startPage(page.getNumber(), page.getSize());
+        List<UserDO> users = userMapper.selectAllByExample(example);
         handleUsers(users);
         return users;
     }
 
     @Override
-    @Cacheable(key = "#id")
+    public List<UserDO> findAllByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new IllegalArgumentException();
+        }
+
+        List<UserDO> userList = Lists.newArrayList();
+
+        Iterables.partition(ids, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _ids = Sets.newHashSet(idList);
+            List<UserDO> _userList = userMapper.selectAllByIds(_ids);
+            userList.addAll(_userList);
+        });
+
+        return userList;
+    }
+
+    @Override
+    public Map<Long, UserDO> findIdMapByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new IllegalArgumentException();
+        }
+
+        List<UserDO> users = findAllByIds(ids);
+
+        return users.stream().collect(Collectors.toMap(
+                UserDO::getId,
+                Function.identity(),
+                (first, second) -> first
+        ));
+    }
+
+    @Override
     public UserDO findById(Long id) {
-        if (null == id) {
-            throw new IllegalArgumentException("ID must not be null!");
+        if (id == null) {
+            throw new IllegalArgumentException();
         }
 
-        UserDO user = userMapper.selectByPrimaryKey(id);
-        handleUser(user);
+        UserDO user = userMapper.selectById(id);
+
+        // 部门
+        DeptDO dept = deptService.findById(user.getDeptId());
+        user.setDept(dept);
+
+        // 订单集合
+        List<OrderDO> orders = orderService.findAllByUserId(id);
+        user.setOrders(orders);
+
+        // 角色集合
+        List<RoleDO> roles = roleService.findUserRoles(id);
+        user.setRoles(roles);
+
         return user;
     }
 
     @Override
-    @Caching(
-            cacheable = {
-                    @Cacheable(key = "#result.id"),
-                    @Cacheable(key = "#result.userName")
-            }
-    )
-    public UserDO findOne(UserQuery query) {
-        Example example = Example.builder(UserDO.class)
-                .where(buildWhereSqls(query))
-                .build();
-        UserDO user = userMapper.selectOneByExample(example);
-        handleUser(user);
-        return user;
-    }
-
-    @Override
-    @Caching(
-            put = {
-                    @CachePut(key = "#result"),
-                    @CachePut(key = "#entity.userName"),
-            },
-            evict = {
-                    @CacheEvict(allEntries = true)
-            }
-    )
     public Long insert(UserDO entity) {
-        if (null == entity) {
-            throw new IllegalArgumentException("Entity must not be null!");
+        if (entity == null) {
+            throw new IllegalArgumentException();
         }
-        int rows = userMapper.insertSelective(entity);
-        if (rows > 0) {
-            return entity.getId();
-        } else {
-            return null;
-        }
+
+        int count = userMapper.insert(entity);
+        return count > 0 ? entity.getId() : 0L;
     }
 
     @Override
-    @Caching(
-            put = {
-                    @CachePut(key = "#entity.id"),
-                    @CachePut(key = "#entity.userName"),
-            },
-            evict = {
-                    @CacheEvict(allEntries = true)
-            }
-    )
-    public boolean update(UserDO entity) {
-        if (null == entity) {
-            throw new IllegalArgumentException("Entity must not be null!");
+    public Boolean update(UserDO entity) {
+        if (entity == null || entity.getId() == null) {
+            throw new IllegalArgumentException();
         }
-        if (null == entity.getId()) {
-            throw new IllegalArgumentException("ID must not be null!");
-        }
-        int rows = userMapper.updateByPrimaryKeySelective(entity);
+
+        int rows = userMapper.update(entity);
         return rows > 0;
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(key = "#id"),
-                    @CacheEvict(allEntries = true)
-            }
-    )
-    public boolean deleteById(Long id) {
-        if (null == id) {
-            throw new IllegalArgumentException("ID must not be null!");
+    public Boolean deleteById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException();
         }
-        int rows = userMapper.deleteByPrimaryKey(id);
-        return rows > 0;
+
+        // 订单
+        orderService.deleteByUserId(id);
+        // 角色
+        roleService.removeUserRole(id);
+        // 部门管理员
+        deptService.removeDeptAdmin(id);
+
+        int count = userMapper.deleteById(id);
+        return count > 0;
     }
 
-    /**
-     * 根据查询对象生成查询条件
-     *
-     * @param query 查询对象
-     * @return {@link WeekendSqls}
-     */
-    private WeekendSqls<UserDO> buildWhereSqls(UserQuery query) {
-        WeekendSqls<UserDO> sqls = WeekendSqls.custom();
-        // 无查询条件
-        if (null == query) {
-            return sqls;
-        }
-        // 用户名
-        if(query.getUserName() != null){
-            sqls.andLike(UserDO::getDeptId, "%".concat(query.getUserName()).concat("%"));
-        }
-        // 所在部门
-        if(query.getDeptId() != null){
-            sqls.andEqualTo(UserDO::getUserName, query.getDeptId());
-        }
-        return sqls;
+    @Override
+    public int deleteAll() {
+        // 订单
+        orderService.deleteAll();
+        // 角色
+        userRoleMapper.deleteAll();
+        // 部门管理员
+        deptAdminMapper.deleteAll();
+
+        return userMapper.deleteAll();
     }
 
     /**
@@ -204,83 +190,29 @@ public class UserServiceImpl extends BaseService implements UserService {
             return;
         }
 
-        // userIds
         Set<Long> userIds = users.stream().map(UserDO::getId).collect(Collectors.toSet());
-        // deptIds
+
+        // 部门集合
         Set<Long> deptIds = users.stream().map(UserDO::getDeptId).collect(Collectors.toSet());
+        Map<Long, DeptDO> deptIdMap = deptService.findIdMapByIds(deptIds);
 
-        // 查询部门集合
-        List<DeptDO> depts = deptMapper.selectByIds(deptIds);
-        Map<Long, DeptDO> deptIdMap = depts.stream().collect(Collectors.toMap(
-                DeptDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
-
-        // 查询订单集合
-        List<OrderDO> orders = orderMapper.selectByUserIds(userIds);
-        Map<Long, List<OrderDO>> userIdOrdersMap = orders.stream().collect(Collectors.groupingBy(
+        // 订单集合
+        List<OrderDO> orders = orderService.findAllByUserIds(userIds);
+        Map<Long, List<OrderDO>> userOrdersMap = orders.stream().collect(Collectors.groupingBy(
                 OrderDO::getUserId
         ));
 
-        // 查询用户角色关系集合
-        List<UserRoleDO> userRoles = userRoleMapper.selectByUserIds(userIds);
-        Map<Long, Set<Long>> userIdRoleIdsMap = userRoles.stream().collect(Collectors.groupingBy(
-                UserRoleDO::getUserId,
-                Collectors.mapping(UserRoleDO::getRoleId, Collectors.toSet())
-        ));
-        // roleIds
-        Set<Long> roleIds = userIdRoleIdsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-        // 查询角色集合
-        List<RoleDO> roles = roleMapper.selectByIds(roleIds);
-        Map<Long, RoleDO> roleIdMap = roles.stream().collect(Collectors.toMap(
-                RoleDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
-        Map<Long, List<RoleDO>> userIdRolesMap = userIdRoleIdsMap.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> entry.getValue().stream().map(roleIdMap::get).collect(Collectors.toList())
+        // 角色集合
+        List<RoleDO> roles = roleService.findUsersRoles(userIds);
+        Map<Long, List<RoleDO>> userRolesMap = roles.stream().collect(Collectors.groupingBy(
+                RoleDO::getUserId
         ));
 
         users.forEach(user -> {
             user.setDept(deptIdMap.get(user.getDeptId()));
-            user.setOrders(userIdOrdersMap.get(user.getId()));
-            user.setRoles(userIdRolesMap.get(user.getId()));
+            user.setOrders(userOrdersMap.get(user.getId()));
+            user.setRoles(userRolesMap.get(user.getId()));
         });
-    }
-
-    /**
-     * 处理user
-     *
-     * @param user 用户对象
-     */
-    private void handleUser(UserDO user) {
-        if (null == user) {
-            return;
-        }
-
-        // userId
-        Long userId = user.getId();
-        // deptId
-        Long deptId = user.getDeptId();
-
-        // 查询部门对象
-        DeptDO dept = deptMapper.selectByPrimaryKey(deptId);
-
-        // 查询订单集合
-        List<OrderDO> orders = orderMapper.selectByUserId(userId);
-
-        // 查询用户角色关系集合
-        List<UserRoleDO> userRoles = userRoleMapper.selectByUserId(userId);
-        // roleIds
-        Set<Long> roleIds = userRoles.stream().map(UserRoleDO::getRoleId).collect(Collectors.toSet());
-        // 查询角色集合
-        List<RoleDO> roles = roleMapper.selectByIds(roleIds);
-
-        user.setDept(dept);
-        user.setOrders(orders);
-        user.setRoles(roles);
     }
 
 }

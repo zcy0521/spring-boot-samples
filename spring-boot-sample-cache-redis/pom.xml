@@ -15,24 +15,53 @@
     <name>Spring Boot Sample :: Cache :: Redis</name>
 
     <properties>
+        <lombok.version>1.18.12</lombok.version>
+        <guava.version>29.0-jre</guava.version>
+        <icu4j.version>67.1</icu4j.version>
         <druid.version>1.1.23</druid.version>
+        <orika.version>1.4.6</orika.version>
         <mybatis.version>2.1.3</mybatis.version>
-        <mybatis-jsr310.version>1.0.2</mybatis-jsr310.version>
-        <mybatis-mapper.version>2.1.5</mybatis-mapper.version>
         <mybatis-pagehelper.version>1.3.0</mybatis-pagehelper.version>
-        <mybatis-generator.version>1.4.0</mybatis-generator.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- durid -->
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- Guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- ICU4J -->
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>${icu4j.version}</version>
+            </dependency>
+
+            <!-- Durid -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
 
-            <!-- mybatis -->
+            <!-- Orkia -->
+            <dependency>
+                <groupId>ma.glasnost.orika</groupId>
+                <artifactId>orika-core</artifactId>
+                <version>${orika.version}</version>
+            </dependency>
+
+            <!-- MyBatis -->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -43,41 +72,20 @@
                 <artifactId>mybatis-spring-boot-starter-test</artifactId>
                 <version>${mybatis.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis-typehandlers-jsr310</artifactId>
-                <version>${mybatis-jsr310.version}</version>
-            </dependency>
 
-            <!-- mybatis-mapper -->
-            <dependency>
-                <groupId>tk.mybatis</groupId>
-                <artifactId>mapper-spring-boot-starter</artifactId>
-                <version>${mybatis-mapper.version}</version>
-            </dependency>
-
-            <!-- mybatis-pagehelper -->
+            <!-- MyBatis PageHelper -->
             <dependency>
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
                 <version>${mybatis-pagehelper.version}</version>
             </dependency>
-
-            <!-- mybatis-generator -->
-            <dependency>
-                <groupId>org.mybatis.generator</groupId>
-                <artifactId>mybatis-generator-core</artifactId>
-                <version>${mybatis-generator.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>cache-redis-mybatis-dao</module>
-        <module>cache-redis-redis-dao</module>
+        <module>cache-redis-dao</module>
         <module>cache-redis-service</module>
         <module>cache-redis-web</module>
-        <module>cache-redis-generator</module>
     </modules>
 
 </project>
