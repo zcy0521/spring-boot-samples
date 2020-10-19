@@ -29,6 +29,9 @@ public class StandaloneRepositoryTest {
     public void testSave() {
         StandaloneDO standalone = new StandaloneDO();
         standalone.setId(1L);
+        standalone.setGmtCreate(new Date());
+        standalone.setDeleted(false);
+
         standalone.setSampleInteger(222);
         standalone.setSampleFloat(33.3f);
         standalone.setSampleDouble(55.5d);
@@ -39,8 +42,6 @@ public class StandaloneRepositoryTest {
         standalone.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         standalone.setSampleEnum(6);
         standalone.setSampleAmount("22.2");
-        standalone.setSampleValid(true);
-        standalone.setGmtCreate(new Date());
         standaloneRepository.save(standalone);
         assertTrue(standaloneRepository.existsById(1L));
     }

@@ -29,6 +29,9 @@ public class ClusterRepositoryTest {
     public void testSave() {
         ClusterDO cluster = new ClusterDO();
         cluster.setId(1L);
+        cluster.setGmtCreate(new Date());
+        cluster.setDeleted(false);
+
         cluster.setSampleInteger(222);
         cluster.setSampleFloat(33.3f);
         cluster.setSampleDouble(55.5d);
@@ -39,8 +42,6 @@ public class ClusterRepositoryTest {
         cluster.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         cluster.setSampleEnum(6);
         cluster.setSampleAmount("22.2");
-        cluster.setSampleValid(true);
-        cluster.setGmtCreate(new Date());
         clusterRepository.save(cluster);
         assertTrue(clusterRepository.existsById(1L));
     }

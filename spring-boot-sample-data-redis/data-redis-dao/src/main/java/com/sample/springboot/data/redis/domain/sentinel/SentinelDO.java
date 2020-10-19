@@ -24,6 +24,8 @@ public class SentinelDO {
 
     private Date gmtModified;
 
+    private Boolean deleted;
+
     private Integer sampleInteger;
 
     private Float sampleFloat;
@@ -49,7 +51,5 @@ public class SentinelDO {
      * 金额使用 BigDecimal to String
      */
     private String sampleAmount;
-
-    private Boolean sampleValid;
 
 }

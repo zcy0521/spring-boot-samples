@@ -25,6 +25,9 @@ public class SentinelServiceTest {
     public void testSave() {
         SentinelDO sentinel = new SentinelDO();
         sentinel.setId(1L);
+        sentinel.setGmtCreate(new Date());
+        sentinel.setDeleted(false);
+
         sentinel.setSampleInteger(222);
         sentinel.setSampleFloat(33.3f);
         sentinel.setSampleDouble(55.5d);
@@ -35,8 +38,6 @@ public class SentinelServiceTest {
         sentinel.setSampleDateTime(LocalDateTime.of(2018, 8, 9, 12, 22, 19));
         sentinel.setSampleEnum(6);
         sentinel.setSampleAmount("22.2");
-        sentinel.setSampleValid(true);
-        sentinel.setGmtCreate(new Date());
         sentinelService.save(sentinel);
         assertTrue(sentinelService.existsById(1L));
     }

@@ -24,6 +24,8 @@ public class ClusterDO {
 
     private Date gmtModified;
 
+    private Boolean deleted;
+
     private Integer sampleInteger;
 
     private Float sampleFloat;
@@ -49,7 +51,5 @@ public class ClusterDO {
      * 金额使用 BigDecimal to String
      */
     private String sampleAmount;
-
-    private Boolean sampleValid;
 
 }
