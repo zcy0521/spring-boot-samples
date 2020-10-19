@@ -1,7 +1,7 @@
 package com.sample.springboot.orika.mapper;
 
 import com.sample.springboot.orika.domain.SampleDO;
-import com.sample.springboot.orika.vo.SampleVO;
+import com.sample.springboot.orika.model.SampleVO;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
@@ -34,27 +34,27 @@ public class SampleVOMapper {
         this.mapperFactory = mapperFactory;
     }
 
-    public SampleDO toSample(SampleVO sampleVO) {
+    public SampleDO convertTo(SampleVO sampleVO) {
         return mapperFactory.getMapperFacade().map(sampleVO, SampleDO.class);
     }
 
-    public List<SampleDO> toSamples(List<SampleVO> sampleVOs) {
+    public List<SampleDO> convertToList(List<SampleVO> sampleVOs) {
         return mapperFactory.getMapperFacade().mapAsList(sampleVOs, SampleDO.class);
     }
 
-    public void updateToSample(SampleVO source, SampleDO target) {
+    public void updateTo(SampleVO source, SampleDO target) {
         mapperFactory.getMapperFacade().map(source, target);
     }
 
-    public SampleVO fromSample(SampleDO sample) {
+    public SampleVO convertFrom(SampleDO sample) {
         return mapperFactory.getMapperFacade().map(sample, SampleVO.class);
     }
 
-    public List<SampleVO> fromSamples(List<SampleDO> samples) {
+    public List<SampleVO> convertFromList(List<SampleDO> samples) {
         return mapperFactory.getMapperFacade().mapAsList(samples, SampleVO.class);
     }
 
-    public void updateFromSample(SampleDO source, SampleVO target) {
+    public void updateFrom(SampleDO source, SampleVO target) {
         mapperFactory.getMapperFacade().map(source, target);
     }
 

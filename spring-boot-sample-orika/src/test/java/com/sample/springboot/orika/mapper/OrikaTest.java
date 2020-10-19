@@ -2,7 +2,7 @@ package com.sample.springboot.orika.mapper;
 
 import com.sample.springboot.orika.domain.SampleDO;
 import com.sample.springboot.orika.enums.SampleEnum;
-import com.sample.springboot.orika.vo.SampleVO;
+import com.sample.springboot.orika.model.SampleVO;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -36,9 +36,9 @@ public class OrikaTest {
     private SampleVOMapper mapper;
 
     @Test
-    public void testToSample() {
+    public void testConvertTo() {
         SampleVO sampleVO = createSampleVO(1L);
-        SampleDO sample = mapper.toSample(sampleVO);
+        SampleDO sample = mapper.convertTo(sampleVO);
 
         assertThat(sample.getId(), is(sampleVO.getId()));
         assertThat(sample.getSampleString(), is(sampleVO.getSampleString()));
@@ -51,13 +51,13 @@ public class OrikaTest {
     }
 
     @Test
-    public void testToSamples() {
+    public void testConvertToList() {
         List<SampleVO> sampleVOs = new ArrayList<>();
         for (int i = 1; i <= 20; i++) {
             sampleVOs.add(createSampleVO((long) i));
         }
 
-        List<SampleDO> samples = mapper.toSamples(sampleVOs);
+        List<SampleDO> samples = mapper.convertToList(sampleVOs);
         for (SampleDO sample : samples) {
             Long id = sample.getId();
             int index = Math.toIntExact(id) - 1;
@@ -75,14 +75,14 @@ public class OrikaTest {
     }
 
     @Test
-    public void testUpdateToSample() {
+    public void testUpdateTo() {
         SampleVO source = createSampleVO(1L);
         SampleDO target = createSampleDO(1L);
 
         source.setSampleString(null);
         source.setSampleText(null);
         source.setSampleDateTime(null);
-        mapper.updateToSample(source, target);
+        mapper.updateTo(source, target);
 
         assertThat(target.getId(), is(source.getId()));
         assertThat(target.getSampleString(), notNullValue());
@@ -95,9 +95,9 @@ public class OrikaTest {
     }
 
     @Test
-    public void testFromSample() {
+    public void testConvertFrom() {
         SampleDO sample = createSampleDO(1L);
-        SampleVO sampleVO = mapper.fromSample(sample);
+        SampleVO sampleVO = mapper.convertFrom(sample);
 
         assertThat(sampleVO.getId(), is(sample.getId()));
         assertThat(sampleVO.getSampleString(), is(sample.getSampleString()));
@@ -110,13 +110,13 @@ public class OrikaTest {
     }
 
     @Test
-    public void testFromSamples() {
+    public void testConvertFromList() {
         List<SampleDO> samples = new ArrayList<>();
         for (int i = 1; i <= 20; i++) {
             samples.add(createSampleDO((long) i));
         }
 
-        List<SampleVO> sampleVOs = mapper.fromSamples(samples);
+        List<SampleVO> sampleVOs = mapper.convertFromList(samples);
         for (SampleVO sampleVO : sampleVOs) {
             Long id = sampleVO.getId();
             int index = Math.toIntExact(id) - 1;
@@ -134,14 +134,14 @@ public class OrikaTest {
     }
 
     @Test
-    public void testUpdateFromSample() {
+    public void testUpdateFrom() {
         SampleDO source = createSampleDO(1L);
         SampleVO target = createSampleVO(1L);
 
         source.setSampleString(null);
         source.setSampleText(null);
         source.setSampleDateTime(null);
-        mapper.updateFromSample(source, target);
+        mapper.updateFrom(source, target);
 
         assertThat(target.getId(), is(source.getId()));
         assertThat(target.getSampleString(), notNullValue());

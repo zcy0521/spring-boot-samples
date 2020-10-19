@@ -1,4 +1,4 @@
-package com.sample.springboot.orika.vo;
+package com.sample.springboot.orika.model;
 
 import lombok.Data;
 

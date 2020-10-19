@@ -13,13 +13,17 @@ public class OrikaConfig {
     @Bean
     public MapperFactory getFactory() {
         MapperFactory mapperFactory = new DefaultMapperFactory.Builder().mapNulls(false).build();
-
-        // 注册全局 converter
         ConverterFactory converterFactory = mapperFactory.getConverterFactory();
-        converterFactory.registerConverter(new LocalDateConverter());
-        converterFactory.registerConverter(new LocalDateTimeConverter());
-        converterFactory.registerConverter(new NumberConverter());
-        converterFactory.registerConverter(new SampleEnumConverter());
+
+        // DateConverter
+        converterFactory.registerConverter(new LocalDateConverters.LocalDateToStringConverter());
+        converterFactory.registerConverter(new LocalDateConverters.LocalDateTimeToStringConverter());
+
+        // NumericConverter
+        converterFactory.registerConverter(new NumericConverters.BigDecimalToStringConverter());
+
+        // EnumsConverter
+        converterFactory.registerConverter(new EnumsConverters.SampleEnumToIntegerConverter());
 
         return mapperFactory;
     }
