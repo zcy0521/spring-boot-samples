@@ -194,9 +194,7 @@ public class SampleSQLProvider {
     }
 
     public String deleteAll() {
-        return new SQL()
-                .DELETE_FROM(TABLE_NAME)
-                .toString();
+        return "TRUNCATE TABLE " + TABLE_NAME;
     }
 
     public String countAll() {
