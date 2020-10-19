@@ -12,8 +12,6 @@ public interface RoleService {
 
     List<RoleDO> findAllByIds(Set<Long> ids);
 
-    Map<Long, RoleDO> findIdMapByIds(Set<Long> ids);
-
     RoleDO findById(Long id);
 
     Long insert(RoleDO entity);

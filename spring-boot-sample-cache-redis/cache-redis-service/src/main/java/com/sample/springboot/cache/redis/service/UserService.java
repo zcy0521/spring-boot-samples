@@ -15,8 +15,6 @@ public interface UserService {
 
     List<UserDO> findAllByIds(Set<Long> ids);
 
-    Map<Long, UserDO> findIdMapByIds(Set<Long> ids);
-
     UserDO findById(Long id);
 
     Long insert(UserDO entity);

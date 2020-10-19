@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -209,9 +210,15 @@ public class OrderServiceImpl extends BaseService implements OrderService {
             return;
         }
 
-        // 用户集合
-        Set<Long> userIds = orders.stream().map(OrderDO::getUserId).collect(Collectors.toSet());
-        Map<Long, UserDO> userIdMap = userService.findIdMapByIds(userIds);
+        // Users集合
+        Set<Long> userIds = orders.stream()
+                .map(OrderDO::getUserId)
+                .collect(Collectors.toSet());
+        Map<Long, UserDO> userIdMap = userService.findAllByIds(userIds).stream().collect(Collectors.toMap(
+                UserDO::getId,
+                Function.identity(),
+                (first, second) -> first
+        ));
 
         orders.forEach(order -> order.setUser(userIdMap.get(order.getUserId())));
     }

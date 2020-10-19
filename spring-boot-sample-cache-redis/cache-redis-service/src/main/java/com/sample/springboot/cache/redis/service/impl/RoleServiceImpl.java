@@ -54,21 +54,6 @@ public class RoleServiceImpl extends BaseService implements RoleService {
     }
 
     @Override
-    public Map<Long, RoleDO> findIdMapByIds(Set<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            throw new IllegalArgumentException();
-        }
-
-        List<RoleDO> roles = findAllByIds(ids);
-
-        return roles.stream().collect(Collectors.toMap(
-                RoleDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
-    }
-
-    @Override
     public RoleDO findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException();
@@ -171,11 +156,15 @@ public class RoleServiceImpl extends BaseService implements RoleService {
             userRoles.addAll(_userRoles);
         });
 
-        // 查询Roles集合
+        // Roles集合
         Set<Long> rolesIds = userRoles.stream()
                 .map(UserRoleDO::getRoleId)
                 .collect(Collectors.toSet());
-        Map<Long, RoleDO> roleIdMap = findIdMapByIds(rolesIds);
+        Map<Long, RoleDO> roleIdMap = findAllByIds(rolesIds).stream().collect(Collectors.toMap(
+                RoleDO::getId,
+                Function.identity(),
+                (first, second) -> first
+        ));
 
         // 返回Roles 对象中包含userId 用来区分不同用户
         List<RoleDO> roles = Lists.newArrayList();

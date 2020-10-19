@@ -94,21 +94,6 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public Map<Long, UserDO> findIdMapByIds(Set<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            throw new IllegalArgumentException();
-        }
-
-        List<UserDO> users = findAllByIds(ids);
-
-        return users.stream().collect(Collectors.toMap(
-                UserDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
-    }
-
-    @Override
     public UserDO findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException();
@@ -193,8 +178,14 @@ public class UserServiceImpl extends BaseService implements UserService {
         Set<Long> userIds = users.stream().map(UserDO::getId).collect(Collectors.toSet());
 
         // 部门集合
-        Set<Long> deptIds = users.stream().map(UserDO::getDeptId).collect(Collectors.toSet());
-        Map<Long, DeptDO> deptIdMap = deptService.findIdMapByIds(deptIds);
+        Set<Long> deptIds = users.stream()
+                .map(UserDO::getDeptId)
+                .collect(Collectors.toSet());
+        Map<Long, DeptDO> deptIdMap = deptService.findAllByIds(deptIds).stream().collect(Collectors.toMap(
+                DeptDO::getId,
+                Function.identity(),
+                (first, second) -> first
+        ));
 
         // 订单集合
         List<OrderDO> orders = orderService.findAllByUserIds(userIds);

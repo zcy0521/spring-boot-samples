@@ -173,21 +173,6 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     }
 
     @Override
-    public Map<Long, DeptDO> findIdMapByIds(Set<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            throw new IllegalArgumentException();
-        }
-
-        List<DeptDO> deptList = findAllByIds(ids);
-
-        return deptList.stream().collect(Collectors.toMap(
-                DeptDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
-    }
-
-    @Override
     public DeptDO findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException();
@@ -343,11 +328,15 @@ public class DeptServiceImpl extends BaseService implements DeptService {
                 .build();
         List<DeptAdminDO> deptAdmins = deptAdminMapper.selectAllByExample(example);
 
-        // 查询User集合
+        // Users集合
         Set<Long> userIds = deptAdmins.stream()
                 .map(DeptAdminDO::getUserId)
                 .collect(Collectors.toSet());
-        Map<Long, UserDO> userIdMap = userService.findIdMapByIds(userIds);
+        Map<Long, UserDO> userIdMap = userService.findAllByIds(userIds).stream().collect(Collectors.toMap(
+                UserDO::getId,
+                Function.identity(),
+                (first, second) -> first
+        ));
 
         // 组装Users 对象中包含deptId position 用来区分不同部门、职位
         List<UserDO> adminList = Lists.newArrayList();

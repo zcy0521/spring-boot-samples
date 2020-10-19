@@ -14,8 +14,6 @@ public interface DeptService {
 
     List<DeptDO> findAllByIds(Set<Long> ids);
 
-    Map<Long, DeptDO> findIdMapByIds(Set<Long> ids);
-
     DeptDO findById(Long id);
 
     Long insert(DeptDO entity);
