@@ -71,9 +71,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 分页查询
         startPage(page.getNumber(), page.getSize());
-        List<UserDO> users = userMapper.selectAllByExample(example);
-        handleUsers(users);
-        return users;
+        List<UserDO> userList = userMapper.selectAllByExample(example);
+        handleUserList(userList);
+        return userList;
     }
 
     @Override
@@ -106,12 +106,12 @@ public class UserServiceImpl extends BaseService implements UserService {
         user.setDept(dept);
 
         // 订单集合
-        List<OrderDO> orders = orderService.findAllByUserId(id);
-        user.setOrders(orders);
+        List<OrderDO> orderList = orderService.findAllByUserId(id);
+        user.setOrders(orderList);
 
         // 角色集合
-        List<RoleDO> roles = roleService.findUserRoles(id);
-        user.setRoles(roles);
+        List<RoleDO> roleList = roleService.findAllUserRole(id);
+        user.setRoles(roleList);
 
         return user;
     }
@@ -166,44 +166,54 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     /**
-     * 处理users
+     * 处理 userList
      *
-     * @param users 用户集合
+     * @param userList 用户集合
      */
-    private void handleUsers(List<UserDO> users) {
-        if (CollectionUtils.isEmpty(users)) {
+    private void handleUserList(List<UserDO> userList) {
+        if (CollectionUtils.isEmpty(userList)) {
             return;
         }
 
-        Set<Long> userIds = users.stream().map(UserDO::getId).collect(Collectors.toSet());
+        // 用户ID
+        Set<Long> userIds = userList.stream()
+                .map(UserDO::getId)
+                .collect(Collectors.toSet());
 
-        // 部门集合
-        Set<Long> deptIds = users.stream()
+        // 部门ID
+        Set<Long> deptIds = userList.stream()
                 .map(UserDO::getDeptId)
                 .collect(Collectors.toSet());
-        Map<Long, DeptDO> deptIdMap = deptService.findAllByIds(deptIds).stream().collect(Collectors.toMap(
-                DeptDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
 
-        // 订单集合
-        List<OrderDO> orders = orderService.findAllByUserIds(userIds);
-        Map<Long, List<OrderDO>> userOrdersMap = orders.stream().collect(Collectors.groupingBy(
-                OrderDO::getUserId
-        ));
+        // 部门
+        List<DeptDO> deptList = deptService.findAllByIds(deptIds);
+        if (!CollectionUtils.isEmpty(deptList)) {
+            Map<Long, DeptDO> deptIdMap = deptList.stream().collect(Collectors.toMap(
+                    DeptDO::getId,
+                    Function.identity(),
+                    (first, second) -> first
+            ));
+            userList.forEach(user -> user.setDept(deptIdMap.get(user.getDeptId())));
+        }
 
-        // 角色集合
-        List<RoleDO> roles = roleService.findUsersRoles(userIds);
-        Map<Long, List<RoleDO>> userRolesMap = roles.stream().collect(Collectors.groupingBy(
-                RoleDO::getUserId
-        ));
+        // 订单
+        List<OrderDO> orderList = orderService.findAllByUserIds(userIds);
+        if (!CollectionUtils.isEmpty(orderList)) {
+            Map<Long, List<OrderDO>> userOrdersMap = orderList.stream().collect(Collectors.groupingBy(
+                    OrderDO::getUserId
+            ));
+            userList.forEach(user -> user.setOrders(userOrdersMap.get(user.getId())));
+        }
 
-        users.forEach(user -> {
-            user.setDept(deptIdMap.get(user.getDeptId()));
-            user.setOrders(userOrdersMap.get(user.getId()));
-            user.setRoles(userRolesMap.get(user.getId()));
-        });
+        // 角色
+        List<RoleDO> roleList = roleService.findAllUserRole(userIds);
+        if (!CollectionUtils.isEmpty(roleList)) {
+            Map<Long, List<RoleDO>> userRolesMap = roleList.stream().collect(Collectors.groupingBy(
+                    RoleDO::getUserId
+            ));
+            userList.forEach(user -> user.setRoles(userRolesMap.get(user.getId())));
+        }
+
     }
 
 }

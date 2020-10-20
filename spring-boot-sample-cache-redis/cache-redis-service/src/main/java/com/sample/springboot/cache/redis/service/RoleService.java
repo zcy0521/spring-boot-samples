@@ -30,12 +30,12 @@ public interface RoleService {
     /**
      * 查询用户角色
      */
-    List<RoleDO> findUserRoles(Long userId);
+    List<RoleDO> findAllUserRole(Long userId);
 
     /**
      * 查询用户角色
      */
-    List<RoleDO> findUsersRoles(Set<Long> userIds);
+    List<RoleDO> findAllUserRole(Set<Long> userIds);
 
     /**
      * 移除用户角色

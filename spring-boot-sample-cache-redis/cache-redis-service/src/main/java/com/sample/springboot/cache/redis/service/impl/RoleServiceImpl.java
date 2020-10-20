@@ -110,7 +110,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
 
     @Override
     public Boolean saveUserRole(Long userId, Long roleId) {
-        // 查询用户角色
+        // 用户角色关系
         UserRoleExample example = UserRoleExample.builder()
                 .userId(userId)
                 .roleId(roleId)
@@ -131,52 +131,60 @@ public class RoleServiceImpl extends BaseService implements RoleService {
     }
 
     @Override
-    public List<RoleDO> findUserRoles(Long userId) {
+    public List<RoleDO> findAllUserRole(Long userId) {
+        // 用户角色关系
         UserRoleExample example = UserRoleExample.builder()
                 .userId(userId)
                 .build();
-        List<UserRoleDO> userRoles = userRoleMapper.selectAllByExample(example);
+        List<UserRoleDO> userRoleList = userRoleMapper.selectAllByExample(example);
 
-        // 查询Roles集合
-        Set<Long> rolesIds = userRoles.stream()
+        // 角色ID
+        Set<Long> roleIds = userRoleList.stream()
                 .map(UserRoleDO::getRoleId)
                 .collect(Collectors.toSet());
 
-        return findAllByIds(rolesIds);
+        return findAllByIds(roleIds);
     }
 
     @Override
-    public List<RoleDO> findUsersRoles(Set<Long> userIds) {
-        List<UserRoleDO> userRoles = Lists.newArrayList();
+    public List<RoleDO> findAllUserRole(Set<Long> userIds) {
+        List<RoleDO> roleList = Lists.newArrayList();
 
+        // 用户角色关系
+        List<UserRoleDO> userRoleList = Lists.newArrayList();
         Iterables.partition(userIds, PARTITION_SIZE).forEach(userIdList -> {
             Set<Long> _userIds = Sets.newHashSet(userIdList);
             UserRoleExample example = UserRoleExample.builder().userIds(_userIds).build();
-            List<UserRoleDO> _userRoles = userRoleMapper.selectAllByExample(example);
-            userRoles.addAll(_userRoles);
+            List<UserRoleDO> _userRoleList = userRoleMapper.selectAllByExample(example);
+            userRoleList.addAll(_userRoleList);
         });
 
-        // Roles集合
-        Set<Long> rolesIds = userRoles.stream()
+        // 角色ID
+        Set<Long> roleIds = userRoleList.stream()
                 .map(UserRoleDO::getRoleId)
                 .collect(Collectors.toSet());
-        Map<Long, RoleDO> roleIdMap = findAllByIds(rolesIds).stream().collect(Collectors.toMap(
+        List<RoleDO> _roleList = findAllByIds(roleIds);
+
+        // 角色不存在
+        if (CollectionUtils.isEmpty(userIds)) {
+            return roleList;
+        }
+
+        // 组装Roles集合 包含userId 用来区分不同用户
+        Map<Long, RoleDO> roleIdMap = _roleList.stream().collect(Collectors.toMap(
                 RoleDO::getId,
                 Function.identity(),
                 (first, second) -> first
         ));
-
-        // 返回Roles 对象中包含userId 用来区分不同用户
-        List<RoleDO> roles = Lists.newArrayList();
-        for (UserRoleDO userRole : userRoles) {
+        for (UserRoleDO userRole : userRoleList) {
             RoleDO _role = roleIdMap.get(userRole.getRoleId());
             RoleDO role = new RoleDO();
             role.setId(_role.getId());
             role.setRoleName(_role.getRoleName());
             role.setUserId(userRole.getId());
-            roles.add(role);
+            roleList.add(role);
         }
-        return roles;
+        return roleList;
     }
 
     @Override
@@ -186,7 +194,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
 
     @Override
     public int removeUserRole(Long userId, Long roleId) {
-        // 查询用户角色信息
+        // 用户角色关系
         UserRoleExample example = UserRoleExample.builder()
                 .userId(userId)
                 .roleId(roleId)
@@ -198,6 +206,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
             return 0;
         }
 
+        // 用户角色关系ID
         Set<Long> userRoleIds = userRole.stream()
                 .map(UserRoleDO::getId)
                 .collect(Collectors.toSet());

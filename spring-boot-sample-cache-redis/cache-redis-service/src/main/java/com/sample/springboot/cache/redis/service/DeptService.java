@@ -37,12 +37,12 @@ public interface DeptService {
     /**
      * 查询部门管理员
      */
-    List<UserDO> findDeptAdmins(Long deptId);
+    List<UserDO> findAllDeptAdmin(Long deptId);
 
     /**
      * 查询部门管理员
      */
-    List<UserDO> findDeptAdmins(Long deptId, Position position);
+    List<UserDO> findAllDeptAdmin(Long deptId, Position position);
 
     /**
      * 删除部门管理员

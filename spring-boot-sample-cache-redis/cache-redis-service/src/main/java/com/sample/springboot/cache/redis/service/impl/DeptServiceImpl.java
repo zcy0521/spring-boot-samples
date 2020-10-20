@@ -52,19 +52,19 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     private DeptMapper deptMapper;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private DeptAdminMapper deptAdminMapper;
 
     @Autowired
-    private DeptDTOMapper deptDTOMapper;
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    private UserService userService;
+    private DeptDTOMapper deptDTOMapper;
 
     @PostConstruct
     public void buildTree() {
@@ -79,39 +79,46 @@ public class DeptServiceImpl extends BaseService implements DeptService {
         }
         stopWatch.stop();
 
-        // 计算拆分的hashMap个数
-        int mapSize = (deptList.size() + HASH_KEY_SIZE - 1) / HASH_KEY_SIZE;
-
         // DB查询部门管理员
         stopWatch.start("DB查询部门管理员");
-        List<UserDO> adminList = findDeptAdmins(null);
+        List<UserDO> adminList = findAllDeptAdmin(null);
         if (!CollectionUtils.isEmpty(adminList)) {
-            Map<Long, List<UserDO>> deptAdminsMap = adminList.stream().collect(Collectors.groupingBy(
+            Map<Long, List<UserDO>> deptAdminMap = adminList.stream().collect(Collectors.groupingBy(
                     UserDO::getDeptId,
                     Collectors.mapping(Function.identity(), Collectors.toList())
             ));
-            deptList.forEach(dept -> dept.setAdmins(deptAdminsMap.get(dept.getId())));
+            deptList.forEach(dept -> dept.setAdmins(deptAdminMap.get(dept.getId())));
         }
         stopWatch.stop();
 
+        // 计算拆分的hashMap个数
+        int mapSize = (deptList.size() + HASH_KEY_SIZE - 1) / HASH_KEY_SIZE;
+
         // 处理节点
         stopWatch.start("处理节点");
-        Map<Long, DeptDO> idMap = deptList.stream().collect(Collectors.toMap(DeptDO::getId, Function.identity()));
-        Map<Long, List<DeptDO>> parentIdMap = deptList.stream().collect(Collectors.groupingBy(DeptDO::getParentId));
+        // 部门ID映射
+        Map<Long, DeptDO> idMap = deptList.stream().collect(Collectors.toMap(
+                DeptDO::getId,
+                Function.identity()
+        ));
+        // 部门ParentID映射
+        Map<Long, List<DeptDO>> parentIdMap = deptList.stream().collect(Collectors.groupingBy(
+                DeptDO::getParentId
+        ));
         Multimap<String, DeptDTO> deptMultimap = ArrayListMultimap.create();
         for (DeptDO dept : deptList) {
             Long id = dept.getId();
             Long parentId = dept.getParentId();
             DeptDTO selfNode = deptDTOMapper.convertFrom(dept);
 
-            // 有父节点
+            // 存在父节点
             DeptDO parent = idMap.get(parentId);
             if (parent != null) {
                 DeptDTO nodeParent = deptDTOMapper.convertFrom(parent);
                 selfNode.setParent(nodeParent);
             }
 
-            // 有子节点
+            // 存在子节点
             List<DeptDO> children = parentIdMap.get(id);
             if (!CollectionUtils.isEmpty(children)) {
                 List<DeptDTO> nodeChildren = deptDTOMapper.convertFromList(children);
@@ -184,27 +191,30 @@ public class DeptServiceImpl extends BaseService implements DeptService {
 
         StopWatch stopWatch = new StopWatch();
 
-        // 查询部门所在hashMap的Key
-        stopWatch.start("查询部门所在hashMap的Key");
+        // 查询部门Map数量
+        stopWatch.start("查询部门Map数量");
         Long mapSize = redisTemplate.opsForSet().size(DEPT_NAME_SPACE);
         Objects.requireNonNull(mapSize);
+        stopWatch.stop();
+
+        // 计算部门所在Map的Key
+        stopWatch.start("计算部门所在Map的Key");
         String key = createKey(id, Math.toIntExact(mapSize));
         log.debug("部门 [{}] 所在hashMap的Key: {}", id, key);
         stopWatch.stop();
 
-        // Redis中查询部门
+        // Redis查询部门
         stopWatch.start("Redis查询部门");
         DeptDTO deptNode = (DeptDTO) redisTemplate.opsForHash().get(key, String.valueOf(id));
         Objects.requireNonNull(deptNode);
         stopWatch.stop();
 
-        // 部门信息
+        // 处理部门信息
+        stopWatch.start("处理部门信息");
         DeptDO dept = deptDTOMapper.convertTo(deptNode);
-        Objects.requireNonNull(dept);
-
-        // 部门路径
         String path = ancestorsToPath(deptNode);
         dept.setPath(path);
+        stopWatch.stop();
 
         log.info("查询部门: {} 成功", id);
         log.debug(stopWatch.prettyPrint());
@@ -225,7 +235,7 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     @Override
     public Boolean update(DeptDO entity) {
         if (null == entity.getId()) {
-            throw new IllegalArgumentException("ID must not be null!");
+            throw new IllegalArgumentException();
         }
 
         int count = deptMapper.update(entity);
@@ -243,8 +253,10 @@ public class DeptServiceImpl extends BaseService implements DeptService {
             throw new IllegalArgumentException();
         }
 
-        // 部门ID集合
+        // 部门ID
         Set<Long> deptIds =  Sets.newHashSet(id);
+
+        // 如果存在子部门 添加子部门ID
         List<DeptDO> descendants = deptMapper.selectDescendants(id);
         if (!CollectionUtils.isEmpty(descendants)) {
             Set<Long> descendantIds = descendants.stream()
@@ -297,7 +309,7 @@ public class DeptServiceImpl extends BaseService implements DeptService {
 
     @Override
     public Boolean saveDeptAdmin(Long deptId, Long userId, Position position) {
-        // 查询管理员信息
+        // 部门管理员关系
         DeptAdminExample example = DeptAdminExample.builder()
                 .deptId(deptId)
                 .adminId(userId)
@@ -320,31 +332,39 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     }
 
     @Override
-    public List<UserDO> findDeptAdmins(Long deptId) {
-        return findDeptAdmins(deptId, null);
+    public List<UserDO> findAllDeptAdmin(Long deptId) {
+        return findAllDeptAdmin(deptId, null);
     }
 
     @Override
-    public List<UserDO> findDeptAdmins(Long deptId, Position position) {
+    public List<UserDO> findAllDeptAdmin(Long deptId, Position position) {
+        List<UserDO> adminList = Lists.newArrayList();
+
+        // 部门管理员关系
         DeptAdminExample example = DeptAdminExample.builder()
                 .deptId(deptId)
                 .position(position)
                 .build();
-        List<DeptAdminDO> deptAdmins = deptAdminMapper.selectAllByExample(example);
+        List<DeptAdminDO> deptAdminList = deptAdminMapper.selectAllByExample(example);
 
-        // Users集合
-        Set<Long> userIds = deptAdmins.stream()
+        // 管理员ID
+        Set<Long> userIds = deptAdminList.stream()
                 .map(DeptAdminDO::getUserId)
                 .collect(Collectors.toSet());
-        Map<Long, UserDO> userIdMap = userService.findAllByIds(userIds).stream().collect(Collectors.toMap(
+        List<UserDO> userList = userService.findAllByIds(userIds);
+
+        // 管理员不存在
+        if (CollectionUtils.isEmpty(userList)) {
+            return adminList;
+        }
+
+        // 组装Users集合 包含deptId position 用来区分不同部门、职位
+        Map<Long, UserDO> userIdMap = userList.stream().collect(Collectors.toMap(
                 UserDO::getId,
                 Function.identity(),
                 (first, second) -> first
         ));
-
-        // 组装Users 对象中包含deptId position 用来区分不同部门、职位
-        List<UserDO> adminList = Lists.newArrayList();
-        for (DeptAdminDO deptAdmin : deptAdmins) {
+        for (DeptAdminDO deptAdmin : deptAdminList) {
             UserDO user = userIdMap.get(deptAdmin.getUserId());
             UserDO admin = new UserDO();
             admin.setId(user.getId());
@@ -368,7 +388,7 @@ public class DeptServiceImpl extends BaseService implements DeptService {
 
     @Override
     public int removeDeptAdmin(Long userId, Long deptId, Position position) {
-        // 查询管理员信息
+        // 部门管理员关系
         DeptAdminExample example = DeptAdminExample.builder()
                 .deptId(deptId)
                 .adminId(userId)
@@ -376,16 +396,17 @@ public class DeptServiceImpl extends BaseService implements DeptService {
                 .build();
         List<DeptAdminDO> deptAdminList = deptAdminMapper.selectAllByExample(example);
 
-        // 管理员信息不存在
+        // 部门管理员不存在
         if (CollectionUtils.isEmpty(deptAdminList)) {
             return 0;
         }
 
+        // 部门管理员关系ID
         Set<Long> deptAdminIds = deptAdminList.stream()
                 .map(DeptAdminDO::getId)
                 .collect(Collectors.toSet());
 
-        // 删除管理员记录
+        // 删除部门管理员
         Iterables.partition(deptAdminIds, PARTITION_SIZE).forEach(deptAdminIdList -> {
             Set<Long> _deptAdminIds = Sets.newHashSet(deptAdminIdList);
             deptAdminMapper.deleteByIds(_deptAdminIds);

@@ -55,11 +55,11 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         // 分页
         startPage(number, size);
-        List<OrderDO> orders = orderMapper.selectAllByExample(example);
+        List<OrderDO> orderList = orderMapper.selectAllByExample(example);
 
         // 处理订单关联信息
-        ordersHandle(orders);
-        return orders;
+        handleOrderList(orderList);
+        return orderList;
     }
 
     @Override
@@ -71,11 +71,11 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         OrderExample example = OrderExample.builder()
                 .userId(userId)
                 .build();
-        List<OrderDO> orders = orderMapper.selectAllByExample(example);
+        List<OrderDO> orderList = orderMapper.selectAllByExample(example);
 
         // 处理订单关联信息
-        ordersHandle(orders);
-        return orders;
+        handleOrderList(orderList);
+        return orderList;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         });
 
         // 处理订单关联信息
-        ordersHandle(orderList);
+        handleOrderList(orderList);
         return orderList;
     }
 
@@ -106,7 +106,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         OrderDO order = orderMapper.selectById(id);
 
-        // 所属用户
+        // 用户
         UserDO user = userService.findById(order.getUserId());
         order.setUser(user);
 
@@ -169,13 +169,15 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         }
 
         // 查询所属用户订单
-        List<OrderDO> orders = findAllByUserId(userId);
-        if (CollectionUtils.isEmpty(orders)) {
+        List<OrderDO> orderList = findAllByUserId(userId);
+        if (CollectionUtils.isEmpty(orderList)) {
             return 0;
         }
 
-        // 删除订单
-        Set<Long> orderIds = orders.stream().map(OrderDO::getId).collect(Collectors.toSet());
+        // 订单ID
+        Set<Long> orderIds = orderList.stream()
+                .map(OrderDO::getId)
+                .collect(Collectors.toSet());
         return deleteByIds(orderIds);
     }
 
@@ -186,13 +188,15 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         }
 
         // 查询用户订单
-        List<OrderDO> orders = findAllByUserIds(userIds);
-        if (CollectionUtils.isEmpty(orders)) {
+        List<OrderDO> orderList = findAllByUserIds(userIds);
+        if (CollectionUtils.isEmpty(orderList)) {
             return 0;
         }
 
-        // 删除订单
-        Set<Long> orderIds = orders.stream().map(OrderDO::getId).collect(Collectors.toSet());
+        // 订单ID
+        Set<Long> orderIds = orderList.stream()
+                .map(OrderDO::getId)
+                .collect(Collectors.toSet());
         return deleteByIds(orderIds);
     }
 
@@ -203,24 +207,30 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
 
     /**
-     * orders处理
+     * 处理 orderList
+     *
+     * @param orderList 订单集合
      */
-    private void ordersHandle(List<OrderDO> orders) {
-        if (CollectionUtils.isEmpty(orders)) {
+    private void handleOrderList(List<OrderDO> orderList) {
+        if (CollectionUtils.isEmpty(orderList)) {
             return;
         }
 
-        // Users集合
-        Set<Long> userIds = orders.stream()
+        // 用户ID
+        Set<Long> userIds = orderList.stream()
                 .map(OrderDO::getUserId)
                 .collect(Collectors.toSet());
-        Map<Long, UserDO> userIdMap = userService.findAllByIds(userIds).stream().collect(Collectors.toMap(
-                UserDO::getId,
-                Function.identity(),
-                (first, second) -> first
-        ));
 
-        orders.forEach(order -> order.setUser(userIdMap.get(order.getUserId())));
+        // 用户
+        List<UserDO> userList = userService.findAllByIds(userIds);
+        if (!CollectionUtils.isEmpty(userList)) {
+            Map<Long, UserDO> userIdMap = userList.stream().collect(Collectors.toMap(
+                    UserDO::getId,
+                    Function.identity(),
+                    (first, second) -> first
+            ));
+            orderList.forEach(order -> order.setUser(userIdMap.get(order.getUserId())));
+        }
     }
 
 }
