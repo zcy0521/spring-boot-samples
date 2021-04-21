@@ -45,6 +45,25 @@ public class DeptAdminSQLProvider {
         return sql.toString();
     }
 
+    public String selectAllByIds(Set<Long> ids) {
+        return new SQL()
+                .SELECT("`id`")
+                .SELECT("`dept_id`")
+                .SELECT("`user_id`")
+                .SELECT("`position`")
+                .FROM(TABLE_NAME)
+                .WHERE_IDS(ids)
+                .toString();
+    }
+
+    public String selectById(Long id) {
+        return new SQL()
+                .SELECT_ALL()
+                .FROM(TABLE_NAME)
+                .WHERE_ID()
+                .toString();
+    }
+
     public String insert(DeptAdminDO entity) {
         return new SQL()
                 .INSERT_INTO(TABLE_NAME)
@@ -83,11 +102,11 @@ public class DeptAdminSQLProvider {
         if (!CollectionUtils.isEmpty(example.getDeptIds())) {
             sql.WHERE_IN("`dept_id`", "deptIds");
         }
-        if (example.getAdminId() != null) {
-            sql.WHERE("`user_id` = #{adminId}");
+        if (example.getUserId() != null) {
+            sql.WHERE("`user_id` = #{userId}");
         }
-        if (!CollectionUtils.isEmpty(example.getAdminIds())) {
-            sql.WHERE_IN("`user_id`", "adminIds");
+        if (!CollectionUtils.isEmpty(example.getUserIds())) {
+            sql.WHERE_IN("`user_id`", "userIds");
         }
         if (example.getPosition() != null) {
             sql.WHERE("`position` = #{position.value}");

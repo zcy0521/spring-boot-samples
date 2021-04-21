@@ -34,6 +34,15 @@ public interface DeptAdminMapper {
     @SelectProvider(type = DeptAdminSQLProvider.class, method = "selectOneByExample")
     DeptAdminDO selectOneByExample(DeptAdminExample example);
 
+    @Lang(ForeachDriver.class)
+    @ResultMap("deptAdminResult")
+    @SelectProvider(type = DeptAdminSQLProvider.class, method = "selectAllByIds")
+    List<DeptAdminDO> selectAllByIds(@Param("ids") Set<Long> ids);
+
+    @ResultMap("deptAdminResult")
+    @SelectProvider(type = DeptAdminSQLProvider.class, method = "selectById")
+    DeptAdminDO selectById(@Param("id") Long id);
+
     @InsertProvider(type = DeptAdminSQLProvider.class, method = "insert")
     @SelectKey(statement = "SELECT LAST_INSERT_ID()", keyColumn = "id", keyProperty = "id", resultType = Long.class, before = false)
     int insert(DeptAdminDO entity);

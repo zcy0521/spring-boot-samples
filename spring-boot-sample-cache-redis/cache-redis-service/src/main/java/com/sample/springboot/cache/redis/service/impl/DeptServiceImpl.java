@@ -14,7 +14,6 @@ import com.sample.springboot.cache.redis.model.DeptDTO;
 import com.sample.springboot.cache.redis.orika.mapper.DeptDTOMapper;
 import com.sample.springboot.cache.redis.service.DeptService;
 import com.sample.springboot.cache.redis.service.UserService;
-import com.sample.springboot.cache.redis.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,7 +30,7 @@ import static com.sample.springboot.cache.redis.mapper.sql.DeptSQLProvider.ROOT_
 
 @Slf4j
 @Service
-public class DeptServiceImpl extends BaseService implements DeptService {
+public class DeptServiceImpl implements DeptService {
 
     /**
      * 部门树 nameSpace
@@ -47,6 +46,11 @@ public class DeptServiceImpl extends BaseService implements DeptService {
      * 从第几级路径开始显示名称
      */
     private static final int VISIBLE_LEVEL = 2;
+
+    /**
+     * 超过100的数据查询分区
+     */
+    private static final int PARTITION_SIZE = 100;
 
     @Autowired
     private DeptMapper deptMapper;
@@ -81,7 +85,7 @@ public class DeptServiceImpl extends BaseService implements DeptService {
 
         // DB查询部门管理员
         stopWatch.start("DB查询部门管理员");
-        List<UserDO> adminList = findAllDeptAdmin(null);
+        List<UserDO> adminList = findAllAdmin(null);
         if (!CollectionUtils.isEmpty(adminList)) {
             Map<Long, List<UserDO>> deptAdminMap = adminList.stream().collect(Collectors.groupingBy(
                     UserDO::getDeptId,
@@ -162,6 +166,21 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     }
 
     @Override
+    public Long findRootId() {
+        DeptDO root = deptMapper.selectTreeRoot();
+
+        if (root == null) {
+            log.warn("ROOT部门不存在 创建新ROOT部门!");
+            root = new DeptDO();
+            root.setDeptName("ROOT");
+            root.setParentId(ROOT_PARENT_ID);
+            deptMapper.insert(root);
+        }
+
+        return root.getId();
+    }
+
+    @Override
     public List<DeptDO> findAll() {
         return deptMapper.selectAll();
     }
@@ -233,7 +252,7 @@ public class DeptServiceImpl extends BaseService implements DeptService {
     }
 
     @Override
-    public Boolean update(DeptDO entity) {
+    public boolean update(DeptDO entity) {
         if (null == entity.getId()) {
             throw new IllegalArgumentException();
         }
@@ -248,78 +267,70 @@ public class DeptServiceImpl extends BaseService implements DeptService {
             throw new IllegalArgumentException();
         }
 
-        DeptDO dept = deptMapper.selectById(id);
-        if (null == dept || ROOT_PARENT_ID.equals(dept.getParentId())) {
+        // 查询待删除部门是否存在
+        DeptDO target = deptMapper.selectById(id);
+        if (null == target || ROOT_PARENT_ID.equals(target.getParentId())) {
             throw new IllegalArgumentException();
         }
 
-        // 部门ID
-        Set<Long> deptIds =  Sets.newHashSet(id);
-
         // 如果存在子部门 添加子部门ID
+        Set<Long> targetIds =  Sets.newHashSet(target.getId());
         List<DeptDO> descendants = deptMapper.selectDescendants(id);
         if (!CollectionUtils.isEmpty(descendants)) {
             Set<Long> descendantIds = descendants.stream()
                     .map(DeptDO::getId)
                     .collect(Collectors.toSet());
-            deptIds.addAll(descendantIds);
+            targetIds.addAll(descendantIds);
         }
 
-        // 移动用户 删除部门
-        Iterables.partition(deptIds, PARTITION_SIZE).forEach(deptIdList -> {
-            // 部门ids
-            Set<Long> _deptIds = Sets.newHashSet(deptIdList);
+        // 删除无效管理员
+        removeAdminByDeptIds(targetIds);
 
-            // 移动子部门用户
+        // 删除部门
+        Iterables.partition(targetIds, PARTITION_SIZE).forEach(idList -> {
+            // 部门ids
+            Set<Long> _targetIds = Sets.newHashSet(idList);
+
+            // 移动部门用户
             UserDO user = new UserDO();
-            user.setDeptId(dept.getParentId());
-            UserExample example = UserExample.builder().deptIds(_deptIds).build();
+            user.setDeptId(target.getParentId());
+            UserExample example = UserExample
+                    .builder()
+                    .deptIds(_targetIds)
+                    .build();
             userMapper.updateByExample(user, example);
 
             // 删除部门
-            deptMapper.deleteByIds(_deptIds);
+            deptMapper.deleteByIds(_targetIds);
         });
-
-        // 删除无效部门管理员
-        removeDeptAdmin(null, id, null);
-
-        return deptIds.size();
+        return targetIds.size();
     }
 
     @Override
     public int deleteAll() {
+        // 删除管理员
         deptAdminMapper.deleteAll();
+        // 删除部门
         return deptMapper.deleteAll();
     }
 
     @Override
-    public Long findRootId() {
-        DeptDO root = deptMapper.selectTreeRoot();
+    public void saveAdmin(Long deptId, Long userId, Position position) {
+        Objects.requireNonNull(deptId);
+        Objects.requireNonNull(userId);
+        Objects.requireNonNull(position);
 
-        if (root == null) {
-            log.warn("ROOT部门不存在 创建新ROOT部门!");
-            root = new DeptDO();
-            root.setDeptName("ROOT");
-            root.setParentId(ROOT_PARENT_ID);
-            deptMapper.insert(root);
-        }
-
-        return root.getId();
-    }
-
-    @Override
-    public Boolean saveDeptAdmin(Long deptId, Long userId, Position position) {
-        // 部门管理员关系
+        // 查询管理员
         DeptAdminExample example = DeptAdminExample.builder()
                 .deptId(deptId)
-                .adminId(userId)
+                .userId(userId)
                 .position(position)
                 .build();
         DeptAdminDO deptAdmin = deptAdminMapper.selectOneByExample(example);
 
         // 管理员已存在
         if (deptAdmin != null) {
-            return true;
+            return;
         }
 
         // 添加管理员
@@ -327,95 +338,154 @@ public class DeptServiceImpl extends BaseService implements DeptService {
         deptAdmin.setDeptId(deptId);
         deptAdmin.setUserId(userId);
         deptAdmin.setPosition(position);
-        int count = deptAdminMapper.insert(deptAdmin);
-        return count > 0;
+        deptAdminMapper.insert(deptAdmin);
     }
 
     @Override
-    public List<UserDO> findAllDeptAdmin(Long deptId) {
-        return findAllDeptAdmin(deptId, null);
+    public List<UserDO> findAllAdmin(Long deptId) {
+        return findAllAdmin(deptId, null);
     }
 
     @Override
-    public List<UserDO> findAllDeptAdmin(Long deptId, Position position) {
-        List<UserDO> adminList = Lists.newArrayList();
-
-        // 部门管理员关系
+    public List<UserDO> findAllAdmin(Long deptId, Position position) {
+        // 查询管理员
         DeptAdminExample example = DeptAdminExample.builder()
                 .deptId(deptId)
                 .position(position)
                 .build();
         List<DeptAdminDO> deptAdminList = deptAdminMapper.selectAllByExample(example);
 
-        // 管理员ID
+        // 无管理员
+        if (CollectionUtils.isEmpty(deptAdminList)) {
+            return Lists.newArrayList();
+        }
+
+        // 查询用户信息
         Set<Long> userIds = deptAdminList.stream()
                 .map(DeptAdminDO::getUserId)
                 .collect(Collectors.toSet());
         List<UserDO> userList = userService.findAllByIds(userIds);
 
-        // 管理员不存在
+        // 用户信息不存在
         if (CollectionUtils.isEmpty(userList)) {
-            return adminList;
+            return Lists.newArrayList();
         }
 
-        // 组装Users集合 包含deptId position 用来区分不同部门、职位
+        // 用户ID Map
         Map<Long, UserDO> userIdMap = userList.stream().collect(Collectors.toMap(
                 UserDO::getId,
                 Function.identity(),
                 (first, second) -> first
         ));
-        for (DeptAdminDO deptAdmin : deptAdminList) {
-            UserDO user = userIdMap.get(deptAdmin.getUserId());
-            UserDO admin = new UserDO();
-            admin.setId(user.getId());
-            admin.setUserName(user.getUserName());
-            admin.setDeptId(deptAdmin.getDeptId());
-            admin.setPosition(deptAdmin.getPosition());
-            adminList.add(admin);
+
+        // 返回Users集合 包含deptId position 用来区分不同部门、职位的管理员
+        List<UserDO> users = Lists.newArrayList();
+        deptAdminList.forEach(deptAdmin -> {
+            UserDO _user = userIdMap.get(deptAdmin.getUserId());
+            UserDO user = new UserDO();
+            user.setId(_user.getId());
+            user.setUserName(_user.getUserName());
+            user.setDeptId(deptAdmin.getDeptId());
+            user.setPosition(deptAdmin.getPosition());
+            users.add(user);
+        });
+        return users;
+    }
+
+    @Override
+    public boolean removeAdmin(DeptAdminDO deptAdmin) {
+        if (deptAdmin == null) {
+            return false;
         }
-        return adminList;
+        if (deptAdmin.getId() == null) {
+            return false;
+        }
+
+        // 查询待删除对象是否存在
+        DeptAdminDO target = deptAdminMapper.selectById(deptAdmin.getId());
+        if (target == null) {
+            return false;
+        }
+
+        int count = deptAdminMapper.deleteById(target.getId());
+        return count > 0;
     }
 
     @Override
-    public int removeDeptAdmin(Long userId) {
-        return removeDeptAdmin(userId, null, null);
-    }
-
-    @Override
-    public int removeDeptAdmin(Long userId, Long deptId) {
-        return removeDeptAdmin(userId, deptId, null);
-    }
-
-    @Override
-    public int removeDeptAdmin(Long userId, Long deptId, Position position) {
-        // 部门管理员关系
-        DeptAdminExample example = DeptAdminExample.builder()
-                .deptId(deptId)
-                .adminId(userId)
-                .position(position)
-                .build();
-        List<DeptAdminDO> deptAdminList = deptAdminMapper.selectAllByExample(example);
-
-        // 部门管理员不存在
-        if (CollectionUtils.isEmpty(deptAdminList)) {
+    public int removeAdmins(List<DeptAdminDO> deptAdmins) {
+        if (CollectionUtils.isEmpty(deptAdmins)) {
             return 0;
         }
 
-        // 部门管理员关系ID
-        Set<Long> deptAdminIds = deptAdminList.stream()
-                .map(DeptAdminDO::getId)
-                .collect(Collectors.toSet());
+        Set<Long> ids = deptAdmins.stream().map(DeptAdminDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
 
-        // 删除部门管理员
-        Iterables.partition(deptAdminIds, PARTITION_SIZE).forEach(deptAdminIdList -> {
-            Set<Long> _deptAdminIds = Sets.newHashSet(deptAdminIdList);
-            deptAdminMapper.deleteByIds(_deptAdminIds);
+        // 查询待删除集合是否存在
+        List<DeptAdminDO> targetList = Lists.newArrayList();
+        Iterables.partition(ids, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _ids = Sets.newHashSet(idList);
+            List<DeptAdminDO> _targetList = deptAdminMapper.selectAllByIds(_ids);
+            targetList.addAll(_targetList);
         });
+        if (CollectionUtils.isEmpty(targetList)) {
+            return 0;
+        }
 
-        return deptAdminIds.size();
+        // 待删除ID集合
+        Set<Long> targetIds = targetList.stream().map(DeptAdminDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(targetIds)) {
+            return 0;
+        }
+
+        // 分区 IN 删除
+        Iterables.partition(targetIds, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _targetIds = Sets.newHashSet(idList);
+            deptAdminMapper.deleteByIds(_targetIds);
+        });
+        return targetIds.size();
     }
 
+    @Override
+    public int removeAdminByUserId(Long userId) {
+        DeptAdminExample example = DeptAdminExample
+                .builder()
+                .userId(userId)
+                .build();
+        List<DeptAdminDO> admins = deptAdminMapper.selectAllByExample(example);
+        return removeAdmins(admins);
+    }
 
+    @Override
+    public int removeAdminByUserIds(Set<Long> userIds) {
+        DeptAdminExample example = DeptAdminExample
+                .builder()
+                .userIds(userIds)
+                .build();
+        List<DeptAdminDO> admins = deptAdminMapper.selectAllByExample(example);
+        return removeAdmins(admins);
+    }
+
+    @Override
+    public int removeAdminByDeptId(Long deptId) {
+        DeptAdminExample example = DeptAdminExample
+                .builder()
+                .deptId(deptId)
+                .build();
+        List<DeptAdminDO> admins = deptAdminMapper.selectAllByExample(example);
+        return removeAdmins(admins);
+    }
+
+    @Override
+    public int removeAdminByDeptIds(Set<Long> deptIds) {
+        DeptAdminExample example = DeptAdminExample
+                .builder()
+                .deptIds(deptIds)
+                .build();
+        List<DeptAdminDO> admins = deptAdminMapper.selectAllByExample(example);
+        return removeAdmins(admins);
+    }
 
     /**
      * 创建部门树Redis key

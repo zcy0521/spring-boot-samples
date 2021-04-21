@@ -7,6 +7,8 @@ public class SampleVO {
 
     private Long id;
 
+    private Boolean deleted;
+
     private Integer sampleInteger;
 
     private Float sampleFloat;
@@ -22,8 +24,6 @@ public class SampleVO {
     private String sampleDateTime;
 
     private Integer sampleEnum;
-
-    private Boolean disabled;
 
     private String sampleText;
 

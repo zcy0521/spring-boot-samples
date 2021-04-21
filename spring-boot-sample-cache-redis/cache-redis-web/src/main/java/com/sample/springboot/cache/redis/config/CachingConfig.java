@@ -1,8 +1,10 @@
 package com.sample.springboot.cache.redis.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sample.springboot.cache.redis.common.CachingNames;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.sample.springboot.cache.redis.caching.CachingNames;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationStyle;
@@ -19,15 +21,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_FINAL;
+
 /**
  * Caching Redis 配置
  */
 @Configuration
 @EnableCaching
 public class CachingConfig {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Bean
     @ConfigurationProperties(prefix = "spring.cache")
@@ -40,7 +41,7 @@ public class CachingConfig {
         // 默认缓存规则
         RedisCacheConfiguration defaultConfig = createConfiguration(properties);
 
-        // 定义各模块缓存规则
+        // * * *
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>(1);
         // ROLE_CACHE
         RedisCacheConfiguration roleConfig = createConfiguration(properties);
@@ -60,6 +61,11 @@ public class CachingConfig {
      */
     private RedisCacheConfiguration createConfiguration(CacheProperties cacheProperties) {
         CacheProperties.Redis redisProperties = cacheProperties.getRedis();
+
+        // ObjectMapper
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, NON_FINAL, JsonTypeInfo.As.PROPERTY);
 
         // 序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();

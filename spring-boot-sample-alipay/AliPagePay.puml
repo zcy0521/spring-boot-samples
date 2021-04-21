@@ -1,0 +1,60 @@
+@startuml
+
+skinparam defaultFontName FangSong
+skinparam sequence {
+    ActorBackgroundColor Gold
+    ActorBorderColor Gray
+
+    ParticipantBackgroundColor DeepSkyBlue
+    ParticipantBorderColor Gray
+
+    ArrowColor Black
+    ArrowFontColor Black
+
+    LifeLineBorderColor DimGray
+    LifeLineBackgroundColor DeepSkyBlue
+}
+
+actor 用户
+participant 商户系统
+participant 支付宝系统
+
+== 1、支付接口 ==
+autonumber 1.1
+用户 -> 商户系统: 下单
+activate 商户系统
+商户系统 -> 支付宝系统: 调用alipay.trade.page.pay\n发送支付请求
+deactivate 商户系统
+activate 支付宝系统
+用户 -> 用户: 用户输入用户名、支付密码
+deactivate 支付宝系统
+用户 -> 支付宝系统: 登录
+activate 支付宝系统
+deactivate 支付宝系统
+用户 -> 用户: 选择支付渠道、输入支付密码
+用户 -> 支付宝系统: 确认支付
+activate 支付宝系统
+deactivate 支付宝系统
+支付宝系统 -> 商户系统: get请求returnUrl\n返回同步返回参数
+activate 支付宝系统
+activate 商户系统
+deactivate 商户系统
+deactivate 支付宝系统
+支付宝系统 -> 商户系统: post请求notifyUrl\n返回异步通知参数
+activate 支付宝系统
+activate 商户系统
+deactivate 商户系统
+deactivate 支付宝系统
+商户系统 -> 支付宝系统: 调用alipay.trade.query\n查看交易状态
+activate 支付宝系统
+activate 商户系统
+支付宝系统 --> 商户系统: 返回交易信息
+deactivate 商户系统
+deactivate 支付宝系统
+
+== 2、退款接口 ==
+
+== 3、交易关闭接口 ==
+
+== 4、下载对账单接口 ==
+@enduml

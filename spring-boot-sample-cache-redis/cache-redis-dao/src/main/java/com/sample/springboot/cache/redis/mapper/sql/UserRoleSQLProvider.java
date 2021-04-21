@@ -42,6 +42,24 @@ public class UserRoleSQLProvider {
         return sql.toString();
     }
 
+    public String selectAllByIds(Set<Long> ids) {
+        return new SQL()
+                .SELECT("`id`")
+                .SELECT("`user_id`")
+                .SELECT("`role_id`")
+                .FROM(TABLE_NAME)
+                .WHERE_IDS(ids)
+                .toString();
+    }
+
+    public String selectById(Long id) {
+        return new SQL()
+                .SELECT_ALL()
+                .FROM(TABLE_NAME)
+                .WHERE_ID()
+                .toString();
+    }
+
     public String insert(UserRoleDO entity) {
         return new SQL()
                 .INSERT_INTO(TABLE_NAME)

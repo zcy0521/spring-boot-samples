@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "init-data", name = "sample", havingValue = "true")
 public class InitialSampleRunner implements ApplicationRunner {
 
     @Autowired

@@ -28,6 +28,9 @@
         <module>spring-boot-sample-mapstruct</module>
         <module>spring-boot-sample-orika</module>
         <module>spring-boot-sample-view-velocity</module>
+        <module>spring-boot-sample-httpclient</module>
+        <module>spring-boot-sample-rest</module>
+        <module>spring-boot-sample-alipay</module>
     </modules>
 
 </project>

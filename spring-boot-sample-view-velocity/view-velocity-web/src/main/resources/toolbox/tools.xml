@@ -47,7 +47,7 @@
         <!--
         This is not useful in its default form.
         But, if it were, it'd be request-scoped.
-        <tool class="org.apache.velocity.tools.generic.ValueParser"/>
+        <tool class="org.apache.templates.velocity.tools.generic.ValueParser"/>
         -->
     </toolbox>
 </tools>

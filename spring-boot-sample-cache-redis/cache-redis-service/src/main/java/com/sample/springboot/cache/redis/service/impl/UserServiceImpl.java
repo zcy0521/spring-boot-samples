@@ -12,7 +12,6 @@ import com.sample.springboot.cache.redis.service.DeptService;
 import com.sample.springboot.cache.redis.service.OrderService;
 import com.sample.springboot.cache.redis.service.RoleService;
 import com.sample.springboot.cache.redis.service.UserService;
-import com.sample.springboot.cache.redis.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserServiceImpl extends BaseService implements UserService {
+public class UserServiceImpl implements UserService {
 
+    /**
+     * 超过100的数据查询分区
+     */
+    private static final int PARTITION_SIZE = 100;
 
     @Autowired
     private UserMapper userMapper;
@@ -64,15 +67,22 @@ public class UserServiceImpl extends BaseService implements UserService {
                 .deleted(query.getDeleted())
                 .build();
 
-        // 查询分页对象 优化number
+        // 构建Page对象
         int totalElements = userMapper.countByExample(example);
-        Page page = new Page(number, size, totalElements);
-        query.setPage(page);
+        Page page = Page.builder()
+                .number(query.getNumber())
+                .size(query.getSize())
+                .totalElements(totalElements)
+                .build();
 
-        // 分页查询
-        startPage(page.getNumber(), page.getSize());
+        // 开启分页查询
+        page.startPage();
         List<UserDO> userList = userMapper.selectAllByExample(example);
+
+        // 处理用户关联信息
         handleUserList(userList);
+        // 将分页对象通过查询对象返回
+        query.setPage(page);
         return userList;
     }
 
@@ -82,14 +92,13 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new IllegalArgumentException();
         }
 
+        // 分区 IN 查询
         List<UserDO> userList = Lists.newArrayList();
-
         Iterables.partition(ids, PARTITION_SIZE).forEach(idList -> {
             Set<Long> _ids = Sets.newHashSet(idList);
             List<UserDO> _userList = userMapper.selectAllByIds(_ids);
             userList.addAll(_userList);
         });
-
         return userList;
     }
 
@@ -99,6 +108,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new IllegalArgumentException();
         }
 
+        // 查询用户信息
         UserDO user = userMapper.selectById(id);
 
         // 部门
@@ -127,7 +137,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public Boolean update(UserDO entity) {
+    public boolean update(UserDO entity) {
         if (entity == null || entity.getId() == null) {
             throw new IllegalArgumentException();
         }
@@ -137,29 +147,69 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public Boolean deleteById(Long id) {
+    public boolean deleteById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            return false;
         }
 
-        // 订单
-        orderService.deleteByUserId(id);
-        // 角色
-        roleService.removeUserRole(id);
-        // 部门管理员
-        deptService.removeDeptAdmin(id);
+        // 查询待删除用户是否存在
+        UserDO target = userMapper.selectById(id);
+        if (target == null) {
+            return false;
+        }
 
+        // 删除订单
+        orderService.deleteByUserId(id);
+        // 删除角色
+        roleService.removeUserRoleByUserId(id);
+        // 删除管理员
+        deptService.removeAdminByUserId(id);
+
+        // 删除用户
         int count = userMapper.deleteById(id);
         return count > 0;
     }
 
     @Override
+    public int deleteByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+
+        // 查询待删除集合是否存在
+        List<UserDO> targetList = findAllByIds(ids);
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+
+        // 待删除ID集合
+        Set<Long> targetIds = targetList.stream().map(UserDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(targetIds)) {
+            return 0;
+        }
+
+        // 删除订单
+        orderService.deleteByUserIds(targetIds);
+        // 删除角色
+        roleService.removeUserRoleByUserIds(targetIds);
+        // 删除管理员
+        deptService.removeAdminByUserIds(targetIds);
+
+        // 分区 IN 删除
+        Iterables.partition(targetIds, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _targetIds = Sets.newHashSet(idList);
+            userMapper.deleteByIds(_targetIds);
+        });
+        return targetIds.size();
+    }
+
+    @Override
     public int deleteAll() {
-        // 订单
+        // 删除订单
         orderService.deleteAll();
-        // 角色
+        // 删除角色
         userRoleMapper.deleteAll();
-        // 部门管理员
+        // 删除管理员
         deptAdminMapper.deleteAll();
 
         return userMapper.deleteAll();

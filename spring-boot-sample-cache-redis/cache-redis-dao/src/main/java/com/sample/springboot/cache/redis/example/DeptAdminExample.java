@@ -14,9 +14,9 @@ public class DeptAdminExample {
 
     private Set<Long> deptIds;
 
-    private Long adminId;
+    private Long userId;
 
-    private Set<Long> adminIds;
+    private Set<Long> userIds;
 
     private Position position;
 

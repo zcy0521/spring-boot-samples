@@ -13,4 +13,6 @@ public class BaseDO {
 
     private Date gmtModified;
 
+    private Boolean deleted;
+
 }

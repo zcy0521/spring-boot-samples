@@ -3,6 +3,7 @@ package com.sample.springboot.view.velocity.query;
 import com.sample.springboot.view.velocity.enums.SampleEnum;
 import com.sample.springboot.view.velocity.page.Page;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,13 +13,20 @@ import java.time.LocalDateTime;
 public class SampleQuery {
 
     /**
-     * 分页信息
+     * 默认查询当前页
+     */
+    private int number = 1;
+
+    /**
+     * 默认查询10条
+     */
+    private int size = 10;
+
+    /**
+     * 分页查询结果
      */
     private Page page;
 
-    /**
-     * 查询条件
-     */
     private Integer sampleInteger;
 
     private String sampleString;

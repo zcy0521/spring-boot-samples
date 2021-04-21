@@ -19,9 +19,11 @@ public interface UserService {
 
     Long insert(UserDO entity);
 
-    Boolean update(UserDO entity);
+    boolean update(UserDO entity);
 
-    Boolean deleteById(Long id);
+    boolean deleteById(Long id);
+
+    int deleteByIds(Set<Long> ids);
 
     int deleteAll();
 

@@ -1,14 +1,14 @@
 package com.sample.springboot.cache.redis.query;
 
-import com.sample.springboot.cache.redis.page.Page;
+import com.sample.springboot.cache.redis.query.base.BaseQuery;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 
 @Data
-public class UserQuery {
-
-    private Page page;
+@EqualsAndHashCode(callSuper = true)
+public class UserQuery extends BaseQuery {
 
     private String userName;
 

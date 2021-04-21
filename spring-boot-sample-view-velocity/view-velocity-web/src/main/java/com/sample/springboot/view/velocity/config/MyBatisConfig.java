@@ -19,7 +19,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @MapperScan(
-        basePackages = {"com.sample.springboot.view.velocity.mapper"},
+        basePackages = {"com.sample.springboot.view.templates.velocity.mapper"},
         sqlSessionFactoryRef = "sqlSessionFactory"
 )
 public class MyBatisConfig {
@@ -34,7 +34,7 @@ public class MyBatisConfig {
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setTypeAliasesPackage("com.sample.springboot.view.velocity.domain");
+        sessionFactory.setTypeAliasesPackage("com.sample.springboot.view.templates.velocity.domain");
         // Configuration
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         sessionFactory.setConfiguration(configuration);

@@ -12,6 +12,8 @@ public interface OrderService {
 
     List<OrderDO> findAll(OrderQuery query, int number, int size);
 
+    List<OrderDO> findAllByIds(Set<Long> ids);
+
     List<OrderDO> findAllByUserId(Long userId);
 
     List<OrderDO> findAllByUserIds(Set<Long> userIds);
@@ -20,9 +22,9 @@ public interface OrderService {
 
     Long insert(OrderDO entity);
 
-    Boolean update(OrderDO entity);
+    boolean update(OrderDO entity);
 
-    Boolean deleteById(Long id);
+    boolean deleteById(Long id);
 
     int deleteByIds(Set<Long> ids);
 

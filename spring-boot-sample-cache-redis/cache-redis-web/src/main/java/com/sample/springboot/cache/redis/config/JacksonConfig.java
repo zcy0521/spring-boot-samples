@@ -3,16 +3,12 @@ package com.sample.springboot.cache.redis.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_FINAL;
 
@@ -25,31 +21,22 @@ public class JacksonConfig {
      * https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto-customize-the-jackson-objectmapper
      */
     @Bean
-    public Jackson2ObjectMapperBuilder configureJackson() {
-        return Jackson2ObjectMapperBuilder
-                .json()
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .defaultTyping(typeResolver());
-    }
+    public Jackson2ObjectMapperBuilderCustomizer configureJackson2() {
 
-    /**
-     * 安全类型转换
-     */
-    @Bean
-    public TypeResolverBuilder<?> typeResolver() {
-        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator
-                .builder()
-                .allowIfSubType(List.class)
-                .allowIfSubType(Set.class)
-                .allowIfSubType(Map.class)
-                .allowIfSubType("com.sample.springboot.cache.redis.model.")
-                .allowIfSubTypeIsArray()
-                .build();
+        return jackson2ObjectMapperBuilder -> {
+            // 属性值为null 不参与序列化
+            jackson2ObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_NULL);
+            // 下划线转驼峰
+            jackson2ObjectMapperBuilder.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+            // 启用 pretty printer
+            jackson2ObjectMapperBuilder.indentOutput(true);
 
-        return ObjectMapper.DefaultTypeResolverBuilder
-                .construct(NON_FINAL, ptv)
-                .init(JsonTypeInfo.Id.CLASS, null)
-                .inclusion(JsonTypeInfo.As.PROPERTY);
+            // 将标准Java类名称用作类型标识符，将类型标识作为属性值序列化。
+            TypeResolverBuilder<?> typeResolver = ObjectMapper.DefaultTypeResolverBuilder.construct(NON_FINAL, LaissezFaireSubTypeValidator.instance)
+                    .init(JsonTypeInfo.Id.CLASS, null)
+                    .inclusion(JsonTypeInfo.As.PROPERTY);
+            jackson2ObjectMapperBuilder.defaultTyping(typeResolver);
+        };
     }
 
 }

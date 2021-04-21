@@ -17,6 +17,7 @@
     <properties>
         <lombok.version>1.18.12</lombok.version>
         <guava.version>29.0-jre</guava.version>
+        <commons-io.version>2.8.0</commons-io.version>
         <druid.version>1.1.24</druid.version>
         <velocity.version>1.0.4.RELEASE</velocity.version>
         <orika.version>1.4.6</orika.version>
@@ -38,6 +39,12 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
 
             <!-- Durid -->

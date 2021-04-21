@@ -34,6 +34,17 @@ public class OrderSQLProvider {
         return sql.toString();
     }
 
+    public String selectAllByIds(Set<Long> ids) {
+        return new SQL()
+                .SELECT("`id`")
+                .SELECT("`subject`")
+                .SELECT("`total_amount`")
+                .SELECT("`user_id`")
+                .FROM(TABLE_NAME)
+                .WHERE_IDS(ids)
+                .toString();
+    }
+
     public String selectById(Long id) {
         return new SQL()
                 .SELECT_ALL()

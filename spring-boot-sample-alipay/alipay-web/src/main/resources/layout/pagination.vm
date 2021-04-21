@@ -1,0 +1,45 @@
+#if(${page})
+<!-- Pagination -->
+#set($number = ${page.number})
+#set($size = ${page.size})
+#set($totalPages = ${page.totalPages})
+#set($totalElements = ${page.totalElements})
+#set($visiblePages = 5)
+#set($range = $pagination.getRange(${number}, ${totalPages}, ${visiblePages}))
+
+<nav id="pagination" >
+    <ul class="pagination justify-content-end">
+        #if(${number} == 1)
+            <li class="page-item disabled"><span class="page-link">首页</span></li>
+        #else
+            <li class="page-item"><a class="page-link" href="#" onclick="pagination(1, ${size})">首页</a></li>
+        #end
+
+        #if(${number} == 1)
+            <li class="page-item disabled"><span class="page-link">上一页</span></li>
+        #else
+            <li class="page-item"><a class="page-link" href="#" onclick="pagination(${number} - 1, ${size})">上一页</a></li>
+        #end
+
+        #foreach($i in ${range})
+            #if(${number} == ${i})
+                <li class="page-item active"><span class="page-link">${i}</span></li>
+            #else
+                <li class="page-item"><a class="page-link" href="#" onclick="pagination(${i}, ${size})">$i</a></li>
+            #end
+        #end
+
+        #if(${number} == ${totalPages})
+            <li class="page-item disabled"><span class="page-link">下一页</span></li>
+        #else
+            <li class="page-item"><a class="page-link" href="#" onclick="pagination(${number} + 1, ${size})">下一页</a></li>
+        #end
+
+        #if(${number} == ${totalPages})
+            <li class="page-item disabled"><span class="page-link">尾页</span></li>
+        #else
+            <li class="page-item"><a class="page-link" href="#" onclick="pagination(${totalPages}, ${size})">尾页</a></li>
+        #end
+    </ul>
+</nav>
+#end

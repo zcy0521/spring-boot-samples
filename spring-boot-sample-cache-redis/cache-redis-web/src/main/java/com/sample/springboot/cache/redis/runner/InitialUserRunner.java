@@ -98,18 +98,18 @@ public class InitialUserRunner implements ApplicationRunner {
         for (Long deptId : deptIds) {
             // POSITION_A 1个
             Long positionAUserId = getRandomId(userIds);
-            deptService.saveDeptAdmin(deptId, positionAUserId, Position.POSITION_A);
+            deptService.saveAdmin(deptId, positionAUserId, Position.POSITION_A);
 
             // POSITION_B 1-2个
             Set<Long> positionBUserIds = getRandomIds(userIds, RandomUtils.nextInt(1, 2));
             for (Long positionBUserId : positionBUserIds) {
-                deptService.saveDeptAdmin(deptId, positionBUserId, Position.POSITION_B);
+                deptService.saveAdmin(deptId, positionBUserId, Position.POSITION_B);
             }
 
             // POSITION_C 1-3个
             Set<Long> positionCUserIds = getRandomIds(userIds, RandomUtils.nextInt(1, 3));
             for (Long positionCUserId : positionCUserIds) {
-                deptService.saveDeptAdmin(deptId, positionCUserId, Position.POSITION_C);
+                deptService.saveAdmin(deptId, positionCUserId, Position.POSITION_C);
             }
         }
 

@@ -29,6 +29,11 @@ public interface OrderMapper {
     @SelectProvider(type = OrderSQLProvider.class, method = "selectAllByExample")
     List<OrderDO> selectAllByExample(OrderExample example);
 
+    @Lang(ForeachDriver.class)
+    @ResultMap("orderResult")
+    @SelectProvider(type = OrderSQLProvider.class, method = "selectAllByIds")
+    List<OrderDO> selectAllByIds(@Param("ids") Set<Long> ids);
+
     @ResultMap("orderResult")
     @SelectProvider(type = OrderSQLProvider.class, method = "selectById")
     OrderDO selectById(@Param("id") Long id);
@@ -49,5 +54,9 @@ public interface OrderMapper {
 
     @DeleteProvider(type = OrderSQLProvider.class, method = "deleteAll")
     int deleteAll();
+
+    int countAll();
+
+    int countByExample(OrderExample example);
 
 }

@@ -1,0 +1,86 @@
+@startuml
+
+skinparam defaultFontName FangSong
+skinparam sequence {
+    ActorBackgroundColor Gold
+    ActorBorderColor Gray
+
+    ParticipantBackgroundColor DeepSkyBlue
+    ParticipantBorderColor Gray
+
+    ArrowColor Black
+    ArrowFontColor Black
+
+    LifeLineBorderColor DimGray
+    LifeLineBackgroundColor DeepSkyBlue
+}
+
+actor 用户
+participant 商户系统
+participant 支付宝系统
+
+== 1、支付接口 ==
+autonumber 1.1
+用户 -> 商户系统: 下单
+activate 商户系统
+商户系统 -> 商户系统: 生成订单信息\n并构造支付请求
+商户系统 -> 支付宝系统: 发送支付请求
+activate 支付宝系统
+支付宝系统 --> 用户: 展示支付信息
+用户 -> 支付宝系统: 输入支付密码确认支付
+支付宝系统 -> 支付宝系统: 完成支付
+支付宝系统 --> 商户系统: 页面返回支付结果 return_url
+支付宝系统 --> 商户系统: 后台通知支付结果 notify_url
+deactivate 支付宝系统
+商户系统 -> 商户系统: 对返回数据进行处理
+商户系统 --> 用户: 展示订单信息
+deactivate 商户系统
+
+== 2、交易关闭接口 ==
+autonumber 2.1
+商户系统 -> 支付宝系统: 请求关闭订单
+activate 商户系统
+activate 支付宝系统
+支付宝系统 --> 商户系统: 返回处理结果
+deactivate 支付宝系统
+deactivate 商户系统
+
+== 3、交易查询接口 ==
+autonumber 3.1
+商户系统 -> 支付宝系统: 发起查询请求
+activate 商户系统
+activate 支付宝系统
+支付宝系统 --> 商户系统: 返回支付状态
+deactivate 支付宝系统
+deactivate 商户系统
+
+== 4、退款接口 ==
+autonumber 4.1
+用户 -> 商户系统: 用户想退款
+activate 商户系统
+商户系统 -> 支付宝系统: 发起退款请求
+activate 支付宝系统
+支付宝系统 --> 商户系统: 返回退款结果
+deactivate 支付宝系统
+deactivate 商户系统
+
+== 5、退款查询接口 ==
+autonumber 5.1
+商户系统 -> 支付宝系统: 发起退款查询请求
+activate 商户系统
+activate 支付宝系统
+支付宝系统 --> 商户系统: 返回退款状态
+deactivate 支付宝系统
+deactivate 商户系统
+
+== 6、下载对账单接口 ==
+autonumber 6.1
+商户系统 -> 支付宝系统: 查询对账单下载地址
+activate 商户系统
+activate 支付宝系统
+支付宝系统 --> 商户系统: 返回对账单下载地址
+商户系统 -> 支付宝系统: 根据下载地址下载对账单
+支付宝系统 --> 商户系统: 返回对账单文件
+deactivate 支付宝系统
+deactivate 商户系统
+@enduml

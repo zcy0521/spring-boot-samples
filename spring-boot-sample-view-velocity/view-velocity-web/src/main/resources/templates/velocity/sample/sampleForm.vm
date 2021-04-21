@@ -1,5 +1,5 @@
 <!-- SampleForm -->
-<form action="${request.contextPath}/${action}" method="post">
+<form action="${request.contextPath}/${action}" method="post" enctype="multipart/form-data">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 
     <div class="form-row">
@@ -32,15 +32,18 @@
     </div>
 
     <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-auto">
             <label for="sampleDate">日期</label>
             <input type="date" class="form-control" name="sampleDate" value="$!{sample.sampleDate}">
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-auto">
             <label for="sampleDateTime">日期时间</label>
             <input type="datetime-local" class="form-control" name="sampleDateTime" value="$!{sample.sampleDateTime}">
         </div>
-        <div class="form-group col-md-4">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-auto">
             <label for="sampleEnum">类型</label>
             <select class="selectpicker form-control border" title="请选择" name="sampleEnum">
                 #foreach ($item in ${sampleEnums})
@@ -51,6 +54,54 @@
                     #end
                 #end
             </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="images">图片</label>
+            <div class="custom-file">
+                <input type="file" accept="image/*" class="custom-file-input" name="images" id="images" multiple>
+                <label class="custom-file-label" for="images">Choose file</label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="audios">音频</label>
+            <div class="custom-file">
+                <input type="file" accept="audio/*" class="custom-file-input" name="audios" id="audios" multiple>
+                <label class="custom-file-label" for="audios">Choose file</label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="videos">视频</label>
+            <div class="custom-file">
+                <input type="file" accept="video/*" class="custom-file-input" name="videos" id="videos" multiple>
+                <label class="custom-file-label" for="videos">Choose file</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="excels">Excel</label>
+            <div class="custom-file">
+                <input type="file" accept=".xls,.xlsx" class="custom-file-input" name="excels" id="excels" multiple>
+                <label class="custom-file-label" for="excels">Choose file</label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="words">Word</label>
+            <div class="custom-file">
+                <input type="file" accept=".doc,.docx" class="custom-file-input" name="excels" id="words" multiple>
+                <label class="custom-file-label" for="words">Choose file</label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="pdfs">PDF</label>
+            <div class="custom-file">
+                <input type="file" accept=".pdf" class="custom-file-input" name="excels" id="pdfs" multiple>
+                <label class="custom-file-label" for="pdfs">Choose file</label>
+            </div>
         </div>
     </div>
 

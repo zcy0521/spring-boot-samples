@@ -28,7 +28,5 @@ public class SampleDO extends BaseDO {
 
     private SampleEnum sampleEnum;
 
-    private Boolean disabled;
-
     private String sampleText;
 }

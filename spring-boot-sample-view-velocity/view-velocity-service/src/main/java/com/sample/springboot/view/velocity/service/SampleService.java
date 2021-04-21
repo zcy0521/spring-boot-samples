@@ -1,6 +1,8 @@
 package com.sample.springboot.view.velocity.service;
 
+import com.sample.springboot.view.velocity.domain.FileDO;
 import com.sample.springboot.view.velocity.domain.SampleDO;
+import com.sample.springboot.view.velocity.domain.SampleFileDO;
 import com.sample.springboot.view.velocity.query.SampleQuery;
 
 import java.util.List;
@@ -10,9 +12,7 @@ public interface SampleService {
 
     List<SampleDO> findAll();
 
-    List<SampleDO> findAll(int number, int size);
-
-    List<SampleDO> findAll(SampleQuery query, int number, int size);
+    List<SampleDO> findAll(SampleQuery query);
 
     List<SampleDO> findAllByIds(Set<Long> ids);
 
@@ -27,5 +27,24 @@ public interface SampleService {
     int deleteByIds(Set<Long> ids);
 
     int deleteAll();
+
+
+    void saveFile(Long sampleId, FileDO file);
+
+    void saveFiles(Long sampleId, List<FileDO> files);
+
+    List<FileDO> findAllFiles(Long sampleId);
+
+    boolean removeFile(SampleFileDO sampleFile);
+
+    int removeFiles(List<SampleFileDO> sampleFiles);
+
+    int removeFileBySampleId(Long sampleId);
+
+    int removeFileBySampleIds(Set<Long> sampleId);
+
+    int removeFileByFileId(Long fileId);
+
+    int removeFileByFileIds(Set<Long> fileIds);
 
 }

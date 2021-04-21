@@ -1,6 +1,7 @@
 package com.sample.springboot.cache.redis.service;
 
 import com.sample.springboot.cache.redis.domain.RoleDO;
+import com.sample.springboot.cache.redis.domain.UserRoleDO;
 
 import java.util.List;
 import java.util.Map;
@@ -16,35 +17,32 @@ public interface RoleService {
 
     Long insert(RoleDO entity);
 
-    Boolean update(RoleDO entity);
+    boolean update(RoleDO entity);
 
-    Boolean deleteById(Long id);
+    boolean deleteById(Long id);
+
+    int deleteByIds(Set<Long> ids);
 
     int deleteAll();
 
-    /**
-     * 新增用户角色
-     */
-    Boolean saveUserRole(Long userId, Long roleId);
 
-    /**
-     * 查询用户角色
-     */
+
+    void saveUserRole(Long userId, Long roleId);
+
     List<RoleDO> findAllUserRole(Long userId);
 
-    /**
-     * 查询用户角色
-     */
     List<RoleDO> findAllUserRole(Set<Long> userIds);
 
-    /**
-     * 移除用户角色
-     */
-    int removeUserRole(Long userId);
+    boolean removeUserRole(UserRoleDO userRole);
 
-    /**
-     * 移除用户角色
-     */
-    int removeUserRole(Long userId, Long roleId);
+    int removeUserRoles(List<UserRoleDO> userRoles);
+
+    int removeUserRoleByUserId(Long userId);
+
+    int removeUserRoleByUserIds(Set<Long> userIds);
+
+    int removeUserRoleByRoleId(Long roleId);
+
+    int removeUserRoleByRoleIds(Set<Long> roleIds);
 
 }

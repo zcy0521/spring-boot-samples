@@ -9,7 +9,6 @@ import com.sample.springboot.cache.redis.example.UserRoleExample;
 import com.sample.springboot.cache.redis.mapper.RoleMapper;
 import com.sample.springboot.cache.redis.mapper.UserRoleMapper;
 import com.sample.springboot.cache.redis.service.RoleService;
-import com.sample.springboot.cache.redis.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,19 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class RoleServiceImpl extends BaseService implements RoleService {
+public class RoleServiceImpl implements RoleService {
+
+    /**
+     * 超过100的数据查询分区
+     */
+    private static final int PARTITION_SIZE = 100;
 
     @Autowired
     private RoleMapper roleMapper;
@@ -73,7 +78,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
     }
 
     @Override
-    public Boolean update(RoleDO entity) {
+    public boolean update(RoleDO entity) {
         if (null == entity.getId()) {
             throw new IllegalArgumentException();
         }
@@ -83,22 +88,52 @@ public class RoleServiceImpl extends BaseService implements RoleService {
     }
 
     @Override
-    public Boolean deleteById(Long id) {
+    public boolean deleteById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            return false;
         }
 
-        RoleDO role = roleMapper.selectById(id);
-        if (role == null) {
-            throw new IllegalArgumentException();
+        // 查询待删除部门是否存在
+        RoleDO target = roleMapper.selectById(id);
+        if (target == null) {
+            return false;
         }
 
         // 删除无效用户角色
-        removeUserRole(null, id);
+        removeUserRoleByRoleId(id);
 
         // 删除Role
         int count = roleMapper.deleteById(id);
         return count > 0;
+    }
+
+    @Override
+    public int deleteByIds(Set<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+
+        // 查询待删除集合是否存在
+        List<RoleDO> targetList = findAllByIds(ids);
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+
+        // 待删除ID集合
+        Set<Long> targetIds = targetList.stream().map(RoleDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(targetIds)) {
+            return 0;
+        }
+
+        // 删除无效附件
+        removeUserRoleByRoleIds(targetIds);
+
+        // 分区 IN 删除
+        Iterables.partition(targetIds, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _targetIds = Sets.newHashSet(idList);
+            roleMapper.deleteByIds(_targetIds);
+        });
+        return targetIds.size();
     }
 
     @Override
@@ -109,7 +144,10 @@ public class RoleServiceImpl extends BaseService implements RoleService {
 
 
     @Override
-    public Boolean saveUserRole(Long userId, Long roleId) {
+    public void saveUserRole(Long userId, Long roleId) {
+        Objects.requireNonNull(userId);
+        Objects.requireNonNull(roleId);
+
         // 用户角色关系
         UserRoleExample example = UserRoleExample.builder()
                 .userId(userId)
@@ -119,15 +157,14 @@ public class RoleServiceImpl extends BaseService implements RoleService {
 
         // 用户角色已存在
         if (userRole != null) {
-            return true;
+            return;
         }
 
         // 创建用户角色
         userRole = new UserRoleDO();
         userRole.setUserId(userId);
         userRole.setRoleId(roleId);
-        int count = userRoleMapper.insert(userRole);
-        return count > 0;
+        userRoleMapper.insert(userRole);
     }
 
     @Override
@@ -138,7 +175,12 @@ public class RoleServiceImpl extends BaseService implements RoleService {
                 .build();
         List<UserRoleDO> userRoleList = userRoleMapper.selectAllByExample(example);
 
-        // 角色ID
+        // 用户无角色
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            return Lists.newArrayList();
+        }
+
+        // 角色ID集合
         Set<Long> roleIds = userRoleList.stream()
                 .map(UserRoleDO::getRoleId)
                 .collect(Collectors.toSet());
@@ -148,8 +190,6 @@ public class RoleServiceImpl extends BaseService implements RoleService {
 
     @Override
     public List<RoleDO> findAllUserRole(Set<Long> userIds) {
-        List<RoleDO> roleList = Lists.newArrayList();
-
         // 用户角色关系
         List<UserRoleDO> userRoleList = Lists.newArrayList();
         Iterables.partition(userIds, PARTITION_SIZE).forEach(userIdList -> {
@@ -159,65 +199,134 @@ public class RoleServiceImpl extends BaseService implements RoleService {
             userRoleList.addAll(_userRoleList);
         });
 
-        // 角色ID
+        // 用户无角色
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            return Lists.newArrayList();
+        }
+
+        // 查询角色集合
         Set<Long> roleIds = userRoleList.stream()
                 .map(UserRoleDO::getRoleId)
                 .collect(Collectors.toSet());
-        List<RoleDO> _roleList = findAllByIds(roleIds);
+        List<RoleDO> roleList = findAllByIds(roleIds);
 
         // 角色不存在
         if (CollectionUtils.isEmpty(userIds)) {
-            return roleList;
+            return Lists.newArrayList();
         }
 
-        // 组装Roles集合 包含userId 用来区分不同用户
-        Map<Long, RoleDO> roleIdMap = _roleList.stream().collect(Collectors.toMap(
+        // 角色ID Map
+        Map<Long, RoleDO> roleIdMap = roleList.stream().collect(Collectors.toMap(
                 RoleDO::getId,
                 Function.identity(),
                 (first, second) -> first
         ));
-        for (UserRoleDO userRole : userRoleList) {
+
+        // 返回Roles集合 包含userId 用来区分不同用户的角色
+        List<RoleDO> roles = Lists.newArrayList();
+        userRoleList.forEach(userRole -> {
             RoleDO _role = roleIdMap.get(userRole.getRoleId());
             RoleDO role = new RoleDO();
             role.setId(_role.getId());
             role.setRoleName(_role.getRoleName());
             role.setUserId(userRole.getId());
-            roleList.add(role);
-        }
-        return roleList;
+            roles.add(role);
+        });
+        return roles;
     }
 
     @Override
-    public int removeUserRole(Long userId) {
-        return removeUserRole(userId, null);
-    }
-
-    @Override
-    public int removeUserRole(Long userId, Long roleId) {
-        // 用户角色关系
-        UserRoleExample example = UserRoleExample.builder()
-                .userId(userId)
-                .roleId(roleId)
-                .build();
-        List<UserRoleDO> userRole = userRoleMapper.selectAllByExample(example);
-
-        // 用户角色不存在
+    public boolean removeUserRole(UserRoleDO userRole) {
         if (userRole == null) {
+            return false;
+        }
+        if (userRole.getId() == null) {
+            return false;
+        }
+
+        // 查询待删除对象是否存在
+        UserRoleDO target = userRoleMapper.selectById(userRole.getId());
+        if (target == null) {
+            return false;
+        }
+
+        int count = userRoleMapper.deleteById(target.getId());
+        return count > 0;
+    }
+
+    @Override
+    public int removeUserRoles(List<UserRoleDO> userRoles) {
+        if (CollectionUtils.isEmpty(userRoles)) {
             return 0;
         }
 
-        // 用户角色关系ID
-        Set<Long> userRoleIds = userRole.stream()
-                .map(UserRoleDO::getId)
-                .collect(Collectors.toSet());
+        Set<Long> ids = userRoles.stream().map(UserRoleDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
 
-        // 删除用户角色
-        Iterables.partition(userRoleIds, PARTITION_SIZE).forEach(userRoleIdList -> {
-            Set<Long> _userRoleIds = Sets.newHashSet(userRoleIdList);
-            userRoleMapper.deleteByIds(_userRoleIds);
+        // 查询待删除集合是否存在
+        List<UserRoleDO> targetList = Lists.newArrayList();
+        Iterables.partition(ids, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _ids = Sets.newHashSet(idList);
+            List<UserRoleDO> _targetList = userRoleMapper.selectAllByIds(_ids);
+            targetList.addAll(_targetList);
         });
+        if (CollectionUtils.isEmpty(targetList)) {
+            return 0;
+        }
 
-        return userRoleIds.size();
+        // 待删除ID集合
+        Set<Long> targetIds = targetList.stream().map(UserRoleDO::getId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(targetIds)) {
+            return 0;
+        }
+
+        // 分区 IN 删除
+        Iterables.partition(targetIds, PARTITION_SIZE).forEach(idList -> {
+            Set<Long> _targetIds = Sets.newHashSet(idList);
+            userRoleMapper.deleteByIds(_targetIds);
+        });
+        return targetIds.size();
     }
 
+    @Override
+    public int removeUserRoleByUserId(Long userId) {
+        UserRoleExample example = UserRoleExample
+                .builder()
+                .userId(userId)
+                .build();
+        List<UserRoleDO> userRoles = userRoleMapper.selectAllByExample(example);
+        return removeUserRoles(userRoles);
+    }
+
+    @Override
+    public int removeUserRoleByUserIds(Set<Long> userIds) {
+        UserRoleExample example = UserRoleExample
+                .builder()
+                .userIds(userIds)
+                .build();
+        List<UserRoleDO> userRoles = userRoleMapper.selectAllByExample(example);
+        return removeUserRoles(userRoles);
+    }
+
+    @Override
+    public int removeUserRoleByRoleId(Long roleId) {
+        UserRoleExample example = UserRoleExample
+                .builder()
+                .roleId(roleId)
+                .build();
+        List<UserRoleDO> userRoles = userRoleMapper.selectAllByExample(example);
+        return removeUserRoles(userRoles);
+    }
+
+    @Override
+    public int removeUserRoleByRoleIds(Set<Long> roleIds) {
+        UserRoleExample example = UserRoleExample
+                .builder()
+                .roleIds(roleIds)
+                .build();
+        List<UserRoleDO> userRoles = userRoleMapper.selectAllByExample(example);
+        return removeUserRoles(userRoles);
+    }
 }

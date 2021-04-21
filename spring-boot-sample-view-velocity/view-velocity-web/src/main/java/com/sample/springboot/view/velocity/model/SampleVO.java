@@ -1,13 +1,17 @@
 package com.sample.springboot.view.velocity.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
+@EqualsAndHashCode
 public class SampleVO {
 
     private Long id;
-
-    private Long[] ids;
 
     private Integer sampleInteger;
 
@@ -27,15 +31,33 @@ public class SampleVO {
 
     private String sampleText;
 
+    private List<MultipartFile> images;
+
+    private Map<Long, String> imageFiles;
+
+    private List<MultipartFile> audios;
+
+    private Map<Long, String> audioFiles;
+
+    private List<MultipartFile> videos;
+
+    private Map<Long, String> videoFiles;
+
+    private List<MultipartFile> excels;
+
+    private Map<Long, String> excelFiles;
+
     private Boolean deleted;
 
-    private Query query = new Query();
+    // query 属性方便在insert/update时携带重定向信息
+    private QueryVO query = new QueryVO();
 
     /**
      * 查询条件
      */
     @Data
-    public class Query {
+    @EqualsAndHashCode
+    public static class QueryVO {
 
         /**
          * 默认查询第1页
@@ -48,7 +70,7 @@ public class SampleVO {
         private int size = 9;
 
         /**
-         * 默认查询有效记录
+         * 默认只查询有效记录
          */
         private Boolean deleted = false;
 

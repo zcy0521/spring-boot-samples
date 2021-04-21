@@ -41,12 +41,12 @@ public class OrikaTest {
         SampleDO sample = mapper.convertTo(sampleVO);
 
         assertThat(sample.getId(), is(sampleVO.getId()));
+        assertThat(sample.getDeleted(), is(sampleVO.getDeleted()));
         assertThat(sample.getSampleString(), is(sampleVO.getSampleString()));
         assertThat(sample.getSampleAmount(), is(new BigDecimal(sampleVO.getSampleAmount())));
         assertThat(sample.getSampleDate(), is(LocalDate.parse(sampleVO.getSampleDate(), dateFormatter)));
         assertThat(sample.getSampleDateTime(), is(LocalDateTime.parse(sampleVO.getSampleDateTime(), dateTimeFormatter)));
         assertThat(sample.getSampleEnum(), is(SampleEnum.valueOf(sampleVO.getSampleEnum())));
-        assertThat(sample.getDisabled(), is(sampleVO.getDisabled()));
         assertThat(sample.getSampleText(), is(sampleVO.getSampleText()));
     }
 
@@ -64,12 +64,12 @@ public class OrikaTest {
             SampleVO sampleVO = sampleVOs.get(index);
 
             assertThat(sample.getId(), is(sampleVO.getId()));
+            assertThat(sample.getDeleted(), is(sampleVO.getDeleted()));
             assertThat(sample.getSampleString(), is(sampleVO.getSampleString()));
             assertThat(sample.getSampleAmount(), is(new BigDecimal(sampleVO.getSampleAmount())));
             assertThat(sample.getSampleDate(), is(LocalDate.parse(sampleVO.getSampleDate(), dateFormatter)));
             assertThat(sample.getSampleDateTime(), is(LocalDateTime.parse(sampleVO.getSampleDateTime(), dateTimeFormatter)));
             assertThat(sample.getSampleEnum(), is(SampleEnum.valueOf(sampleVO.getSampleEnum())));
-            assertThat(sample.getDisabled(), is(sampleVO.getDisabled()));
             assertThat(sample.getSampleText(), is(sampleVO.getSampleText()));
         }
     }
@@ -85,12 +85,12 @@ public class OrikaTest {
         mapper.updateTo(source, target);
 
         assertThat(target.getId(), is(source.getId()));
+        assertThat(target.getDeleted(), is(source.getDeleted()));
         assertThat(target.getSampleString(), notNullValue());
         assertThat(target.getSampleAmount(), is(new BigDecimal(source.getSampleAmount())));
         assertThat(target.getSampleDate(), is(LocalDate.parse(source.getSampleDate(), dateFormatter)));
         assertThat(target.getSampleDateTime(), notNullValue());
         assertThat(target.getSampleEnum(), is(SampleEnum.valueOf(source.getSampleEnum())));
-        assertThat(target.getDisabled(), is(source.getDisabled()));
         assertThat(target.getSampleText(), notNullValue());
     }
 
@@ -100,12 +100,12 @@ public class OrikaTest {
         SampleVO sampleVO = mapper.convertFrom(sample);
 
         assertThat(sampleVO.getId(), is(sample.getId()));
+        assertThat(sampleVO.getDeleted(), is(sample.getDeleted()));
         assertThat(sampleVO.getSampleString(), is(sample.getSampleString()));
         assertThat(sampleVO.getSampleAmount(), is(sample.getSampleAmount().toString()));
         assertThat(sampleVO.getSampleDate(), is(sample.getSampleDate().format(dateFormatter)));
         assertThat(sampleVO.getSampleDateTime(), is(sample.getSampleDateTime().format(dateTimeFormatter)));
         assertThat(sampleVO.getSampleEnum(), is(sample.getSampleEnum().getValue()));
-        assertThat(sampleVO.getDisabled(), is(sample.getDisabled()));
         assertThat(sampleVO.getSampleText(), is(sample.getSampleText()));
     }
 
@@ -123,12 +123,12 @@ public class OrikaTest {
             SampleDO sample = samples.get(index);
 
             assertThat(sampleVO.getId(), is(sample.getId()));
+            assertThat(sampleVO.getDeleted(), is(sample.getDeleted()));
             assertThat(sampleVO.getSampleString(), is(sample.getSampleString()));
             assertThat(sampleVO.getSampleAmount(), is(sample.getSampleAmount().toString()));
             assertThat(sampleVO.getSampleDate(), is(sample.getSampleDate().format(dateFormatter)));
             assertThat(sampleVO.getSampleDateTime(), is(sample.getSampleDateTime().format(dateTimeFormatter)));
             assertThat(sampleVO.getSampleEnum(), is(sample.getSampleEnum().getValue()));
-            assertThat(sampleVO.getDisabled(), is(sample.getDisabled()));
             assertThat(sampleVO.getSampleText(), is(sample.getSampleText()));
         }
     }
@@ -144,12 +144,12 @@ public class OrikaTest {
         mapper.updateFrom(source, target);
 
         assertThat(target.getId(), is(source.getId()));
+        assertThat(target.getDeleted(), is(source.getDeleted()));
         assertThat(target.getSampleString(), notNullValue());
         assertThat(target.getSampleAmount(), is(source.getSampleAmount().toString()));
         assertThat(target.getSampleDate(), is(source.getSampleDate().format(dateFormatter)));
         assertThat(target.getSampleDateTime(), notNullValue());
         assertThat(target.getSampleEnum(), is(source.getSampleEnum().getValue()));
-        assertThat(target.getDisabled(), is(source.getDisabled()));
         assertThat(target.getSampleText(), notNullValue());
     }
 
@@ -157,12 +157,12 @@ public class OrikaTest {
         SampleDO sample = new SampleDO();
         sample.setId(id);
         sample.setGmtCreate(new Date());
+        sample.setDeleted(false);
         sample.setSampleString("SampleDOString" + id);
         sample.setSampleAmount(getRandomBigDecimal());
         sample.setSampleDate(getRandomDate());
         sample.setSampleDateTime(LocalDateTime.of(getRandomDate(), getRandomTime()));
         sample.setSampleEnum(getRandomSampleEnum());
-        sample.setDisabled(false);
         sample.setSampleText("SampleDOText" + id);
         return sample;
     }
@@ -170,12 +170,12 @@ public class OrikaTest {
     private SampleVO createSampleVO(Long id) {
         SampleVO sampleVO = new SampleVO();
         sampleVO.setId(id);
+        sampleVO.setDeleted(true);
         sampleVO.setSampleString("SampleVOString" + id);
         sampleVO.setSampleAmount(getRandomBigDecimal().toString());
         sampleVO.setSampleDate(getRandomDate().format(dateFormatter));
         sampleVO.setSampleDateTime(LocalDateTime.of(getRandomDate(), getRandomTime()).format(dateTimeFormatter));
         sampleVO.setSampleEnum(getRandomSampleEnum().getValue());
-        sampleVO.setDisabled(true);
         sampleVO.setSampleText("SampleVOText" + id);
         return sampleVO;
     }

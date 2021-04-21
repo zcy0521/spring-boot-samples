@@ -33,6 +33,15 @@ public interface UserRoleMapper {
     @SelectProvider(type = UserRoleSQLProvider.class, method = "selectOneByExample")
     UserRoleDO selectOneByExample(UserRoleExample example);
 
+    @Lang(ForeachDriver.class)
+    @ResultMap("userRoleResult")
+    @SelectProvider(type = UserRoleSQLProvider.class, method = "selectAllByIds")
+    List<UserRoleDO> selectAllByIds(@Param("ids") Set<Long> ids);
+
+    @ResultMap("userRoleResult")
+    @SelectProvider(type = UserRoleSQLProvider.class, method = "selectById")
+    UserRoleDO selectById(@Param("id") Long id);
+
     @InsertProvider(type = UserRoleSQLProvider.class, method = "insert")
     @SelectKey(statement = "SELECT LAST_INSERT_ID()", keyColumn = "id", keyProperty = "id", resultType = Long.class, before = false)
     int insert(UserRoleDO entity);
