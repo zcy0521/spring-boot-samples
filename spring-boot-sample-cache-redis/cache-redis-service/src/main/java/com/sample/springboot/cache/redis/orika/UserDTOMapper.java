@@ -1,4 +1,4 @@
-package com.sample.springboot.cache.redis.orika.mapper;
+package com.sample.springboot.cache.redis.orika;
 
 import com.sample.springboot.cache.redis.domain.UserDO;
 import com.sample.springboot.cache.redis.model.UserDTO;
