@@ -11,7 +11,7 @@ import com.sample.springboot.cache.redis.mapper.DeptAdminMapper;
 import com.sample.springboot.cache.redis.mapper.DeptMapper;
 import com.sample.springboot.cache.redis.mapper.UserMapper;
 import com.sample.springboot.cache.redis.model.DeptDTO;
-import com.sample.springboot.cache.redis.orika.mapper.DeptDTOMapper;
+import com.sample.springboot.cache.redis.orika.DeptDTOMapper;
 import com.sample.springboot.cache.redis.service.DeptService;
 import com.sample.springboot.cache.redis.service.UserService;
 import lombok.extern.slf4j.Slf4j;
